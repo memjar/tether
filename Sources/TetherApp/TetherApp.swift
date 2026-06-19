@@ -1,0 +1,57 @@
+import Cocoa
+import SwiftUI
+import TetherEngine
+import TetherAI
+import TetherAPI
+
+@main
+struct TetherApp {
+    static func main() {
+        let app = NSApplication.shared
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        app.setActivationPolicy(.accessory) // menubar-only, no dock icon
+        app.run()
+    }
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    var statusItem: NSStatusItem!
+    var popover: NSPopover!
+    var engine: TetherEngine!
+    var eventMonitor: Any?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        engine = TetherEngine()
+        engine.start()
+
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+
+        if let button = statusItem.button {
+            button.image = NSImage(systemSymbolName: "antenna.radiowaves.left.and.right", accessibilityDescription: "Tether")
+            button.action = #selector(togglePopover)
+            button.target = self
+        }
+
+        let contentView = DashboardView(engine: engine)
+        popover = NSPopover()
+        popover.contentSize = NSSize(width: 340, height: 520)
+        popover.behavior = .transient
+        popover.contentViewController = NSHostingController(rootView: contentView)
+
+        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+            if let p = self?.popover, p.isShown { p.performClose(nil) }
+        }
+
+    }
+
+    @objc func togglePopover() {
+        guard let button = statusItem.button else { return }
+        if popover.isShown {
+            popover.performClose(nil)
+        } else {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+}
