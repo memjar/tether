@@ -2,6 +2,7 @@
 .build/
 .swiftpm/
 *.xcodeproj
+!Carmack/Carmack.xcodeproj
 xcuserdata/
 DerivedData/
 *.o
