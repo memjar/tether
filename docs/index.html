@@ -119,12 +119,13 @@
         .usecases h2{font-size:clamp(32px,4vw,56px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:16px;}
         .usecases > p{font-size:17px;color:var(--dim);text-align:center;margin-bottom:72px;max-width:480px;}
         .uc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:960px;width:100%;}
-        .uc-card{background:var(--card);padding:48px 36px;transition:background 0.2s;}
-        .uc-card:hover{background:rgba(212,175,55,0.04);}
-        .uc-icon{margin-bottom:24px;}
-        .uc-icon svg{width:40px;height:40px;}
-        .uc-card h3{font-size:18px;font-weight:600;margin-bottom:10px;letter-spacing:-0.01em;}
-        .uc-card p{font-size:14px;color:var(--dim);line-height:1.6;}
+        .uc-card{background-size:cover;background-position:center;position:relative;padding:0;min-height:320px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;}
+        .uc-card::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0.1) 100%);z-index:1;}
+        .uc-card-content{position:relative;z-index:2;padding:36px;}
+        .uc-icon{margin-bottom:16px;}
+        .uc-icon svg{width:32px;height:32px;}
+        .uc-card h3{font-size:18px;font-weight:600;margin-bottom:8px;letter-spacing:-0.01em;}
+        .uc-card p{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.6;}
 
         /* HOW IT WORKS */
         .how{padding:120px 40px;background:var(--dark);display:flex;flex-direction:column;align-items:center;}
@@ -363,35 +364,47 @@
     <h2 class="fade">Built for the field.</h2>
     <p class="fade">Wherever you need internet, Tether turns one connection into many.</p>
     <div class="uc-grid fade">
-        <div class="uc-card">
+        <div class="uc-card" style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&q=80')">
+            <div class="uc-card-content">
             <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M8 32l6-12 6 8 6-16 6 10"/><rect x="4" y="4" width="32" height="28" rx="2"/></svg></div>
             <h3>Remote Work</h3>
-            <p>Hotel WiFi drops? Tether fails over to your phone's LTE without dropping your Zoom. Seamless.</p>
+            <p>Hotel WiFi drops? Tether fails over to your phone's LTE without dropping your Zoom.</p>
+            </div>
         </div>
-        <div class="uc-card">
+        <div class="uc-card" style="background-image:url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=640&q=80')">
+            <div class="uc-card-content">
             <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="20" cy="16" r="6"/><path d="M8 36c0-6 5-12 12-12s12 6 12 12"/><circle cx="32" cy="10" r="4" opacity="0.4"/><circle cx="8" cy="10" r="4" opacity="0.4"/></svg></div>
             <h3>Team Sharing</h3>
-            <p>One Ethernet port, six people. Share your connection with the crew and manage who gets bandwidth.</p>
+            <p>One Ethernet port, six people. Share your connection and manage who gets bandwidth.</p>
+            </div>
         </div>
-        <div class="uc-card">
+        <div class="uc-card" style="background-image:url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=640&q=80')">
+            <div class="uc-card-content">
             <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M6 20h28M20 6v28"/><circle cx="20" cy="20" r="14"/><ellipse cx="20" cy="20" rx="8" ry="14"/></svg></div>
             <h3>Travel</h3>
-            <p>Turn airport lounge WiFi into a private hotspot for all your devices. Encrypted, controlled, yours.</p>
+            <p>Turn airport lounge WiFi into a private hotspot for all your devices.</p>
+            </div>
         </div>
-        <div class="uc-card">
+        <div class="uc-card" style="background-image:url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=640&q=80')">
+            <div class="uc-card-content">
             <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="8" y="6" width="24" height="28" rx="2"/><path d="M14 14h12M14 20h8M14 26h10"/></svg></div>
             <h3>Events</h3>
-            <p>Pop up a beacon at the venue. Track how many devices connect, throttle bandwidth hogs, kill it when you leave.</p>
+            <p>Pop up a beacon at the venue. Track connections, throttle hogs, kill it when you leave.</p>
+            </div>
         </div>
-        <div class="uc-card">
+        <div class="uc-card" style="background-image:url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=640&q=80')">
+            <div class="uc-card-content">
             <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M20 4v8M4 20h8M28 20h8M20 28v8"/><circle cx="20" cy="20" r="6"/><circle cx="20" cy="20" r="14"/></svg></div>
             <h3>Vehicles</h3>
-            <p>Mount your Mac in the van, tether your phone, and share WiFi with every device on board. Road warrior mode.</p>
+            <p>Mount your Mac in the van, tether your phone, share WiFi with every device on board.</p>
+            </div>
         </div>
-        <div class="uc-card">
+        <div class="uc-card" style="background-image:url('https://images.unsplash.com/photo-1504457047772-27faf1c00561?w=640&q=80')">
+            <div class="uc-card-content">
             <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M12 28V16l8-8 8 8v12"/><path d="M18 28v-6h4v6"/><path d="M4 18l16-14 16 14"/></svg></div>
             <h3>Home Backup</h3>
-            <p>ISP goes down? Tether detects the drop and fails over to cellular. Your smart home stays connected.</p>
+            <p>ISP goes down? Tether detects the drop and fails over to cellular automatically.</p>
+            </div>
         </div>
     </div>
 </section>
