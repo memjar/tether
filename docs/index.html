@@ -46,8 +46,8 @@
             z-index: 100;
         }
         nav .container { display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-        .logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000; font-weight: 600; }
+        .logo { font-size: 22px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; }
+        .logo-globe { width: 32px; height: 32px; border-radius: 50%; }
         .nav-links { display: flex; gap: 28px; align-items: center; }
         .nav-links a { color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
         .nav-links a:hover { color: var(--text); }
@@ -228,7 +228,7 @@
 <nav>
     <div class="container">
         <div class="logo">
-            <div class="logo-icon">T</div>
+            <canvas class="logo-globe" id="logoGlobe" width="64" height="64"></canvas>
             Tether
         </div>
         <div class="nav-links">
@@ -302,32 +302,32 @@
         <h2 class="section-title">Everything your network needs.</h2>
         <div class="feature-grid">
             <div class="feature-card">
-                <div class="feature-icon">&#x1F4E1;</div>
+                <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="14" r="2"/><path d="M8.5 6.5a5.5 5.5 0 0 1 7 0M5.5 3.5a10 10 0 0 1 13 0"/><line x1="12" y1="16" x2="12" y2="21"/></svg></div>
                 <h3>Open a Beacon</h3>
                 <p>Bridge any connection into a shared WiFi beacon. Cellular, Ethernet, Thunderbolt, iPhone USB, Bluetooth. One tap to go live.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#x1F6E1;</div>
+                <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V7l8-4z"/></svg></div>
                 <h3>Device Management</h3>
                 <p>See every connected device. Pause freeloaders, kick unknowns, prioritize what matters. PF firewall-level control.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#x1F4CA;</div>
+                <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="16" y="4" width="4" height="17" rx="1"/></svg></div>
                 <h3>Signal Intelligence</h3>
                 <p>Live RSSI, noise floor, SNR, channel utilization, and PHY mode. Scan nearby networks to find the clearest channel.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#x1F9E0;</div>
+                <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="7" r="1.5"/><circle cx="19" cy="7" r="1.5"/><circle cx="5" cy="17" r="1.5"/><circle cx="19" cy="17" r="1.5"/><path d="M9.5 10L6.5 8M14.5 10l3-2M9.5 14l-3 2M14.5 14l3 2"/></svg></div>
                 <h3>AI Failover</h3>
                 <p>Predicts connection failures before they happen. Auto-switches to the next best interface with zero downtime.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#x1F4F6;</div>
+                <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="#D4AF37"/><line x1="12" y1="12" x2="18" y2="6"/></svg></div>
                 <h3>Proximity Radar</h3>
                 <p>See where devices are in real-time. Bluetooth-assisted proximity mapping shows every connection's position relative to your active beacon.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#x1F512;</div>
+                <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 1 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#D4AF37" stroke="none"/></svg></div>
                 <h3>WPA2/WPA3 Security</h3>
                 <p>Your shared network is encrypted by default. Custom SSID, password, and security type. No open networks.</p>
             </div>
@@ -341,7 +341,7 @@
         <h2 class="section-title">See everything on your network.</h2>
         <div class="device-list">
             <div class="device-row">
-                <div class="device-icon">&#x1F4BB;</div>
+                <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="14" height="10" rx="1.5"/><path d="M1 16h18"/></svg></div>
                 <div class="device-info">
                     <div class="device-name">MacBook Pro</div>
                     <div class="device-meta">192.168.1.101 &middot; This device</div>
@@ -359,7 +359,7 @@
                 </div>
             </div>
             <div class="device-row">
-                <div class="device-icon">&#x1F4F1;</div>
+                <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="6" y="2" width="8" height="16" rx="2"/><line x1="9" y1="15" x2="11" y2="15"/></svg></div>
                 <div class="device-info">
                     <div class="device-name">iPhone 15 Pro</div>
                     <div class="device-meta">192.168.1.104</div>
@@ -376,7 +376,7 @@
                 </div>
             </div>
             <div class="device-row">
-                <div class="device-icon">&#x1F4FA;</div>
+                <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="16" height="11" rx="1.5"/><path d="M7 17h6M10 14v3"/></svg></div>
                 <div class="device-info">
                     <div class="device-name">Apple TV</div>
                     <div class="device-meta">192.168.1.108</div>
@@ -394,7 +394,7 @@
                 </div>
             </div>
             <div class="device-row">
-                <div class="device-icon">&#x2328;&#xFE0F;</div>
+                <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M8 8a2 2 0 1 1 4 0c0 1.5-2 2-2 3"/><circle cx="10" cy="14" r="0.5" fill="#D4AF37"/></svg></div>
                 <div class="device-info">
                     <div class="device-name">Unknown</div>
                     <div class="device-meta">a6:83:1d:XX:XX:XX &middot; Paused</div>
@@ -532,12 +532,12 @@ drawGlobe();
     const GOLD_RGB = '212,175,55';
 
     const devices = [
-        { name: 'MacBook Pro', emoji: '\u{1F4BB}', dist: 0.15, angle: 0.3, band: '5 GHz', rssi: -35, speed: 0.0004 },
-        { name: 'iPhone 15', emoji: '\u{1F4F1}', dist: 0.28, angle: 1.8, band: '5 GHz', rssi: -52, speed: 0.0007 },
-        { name: 'iPad Air', emoji: '\u{1F4F1}', dist: 0.42, angle: 3.5, band: '5 GHz', rssi: -61, speed: 0.0003 },
-        { name: 'Apple TV', emoji: '\u{1F4FA}', dist: 0.55, angle: 5.2, band: '2.4 GHz', rssi: -68, speed: 0.0001 },
-        { name: 'HomePod', emoji: '\u{1F50A}', dist: 0.35, angle: 4.1, band: '2.4 GHz', rssi: -55, speed: 0.0002 },
-        { name: 'Unknown', emoji: '\u{2753}', dist: 0.78, angle: 2.4, band: '2.4 GHz', rssi: -82, speed: 0.0006 },
+        { name: 'MacBook Pro', dist: 0.15, angle: 0.3, band: '5 GHz', rssi: -35, speed: 0.0004 },
+        { name: 'iPhone 15', dist: 0.28, angle: 1.8, band: '5 GHz', rssi: -52, speed: 0.0007 },
+        { name: 'iPad Air', dist: 0.42, angle: 3.5, band: '5 GHz', rssi: -61, speed: 0.0003 },
+        { name: 'Apple TV', dist: 0.55, angle: 5.2, band: '2.4 GHz', rssi: -68, speed: 0.0001 },
+        { name: 'HomePod', dist: 0.35, angle: 4.1, band: '2.4 GHz', rssi: -55, speed: 0.0002 },
+        { name: 'Unknown', dist: 0.78, angle: 2.4, band: '2.4 GHz', rssi: -82, speed: 0.0006 },
     ];
 
     let sweepAngle = 0;
@@ -757,6 +757,34 @@ drawGlobe();
     resize();
     draw();
     setTimeout(animateStats, 600);
+})();
+
+// NAV MINI GLOBE
+(function(){
+const C=document.getElementById('logoGlobe');if(!C)return;
+const ctx=C.getContext('2d');const S=32,R=13,cx=S/2,cy=S/2;
+C.style.width=S+'px';C.style.height=S+'px';
+const dpr=window.devicePixelRatio||1;C.width=S*dpr;C.height=S*dpr;ctx.scale(dpr,dpr);
+const CONT=[
+[[-130,50],[-125,55],[-110,62],[-95,68],[-80,62],[-65,48],[-60,44],[-70,30],[-82,25],[-90,18],[-105,22],[-120,36],[-130,50]],
+[[-80,10],[-72,12],[-60,8],[-50,2],[-38,-2],[-35,-8],[-42,-22],[-52,-32],[-66,-52],[-75,-42],[-72,-25],[-75,-5],[-80,10]],
+[[-8,37],[10,48],[25,58],[30,65],[18,70],[5,60],[-5,48],[-10,37],[-8,37]],
+[[-15,32],[10,37],[25,30],[35,22],[42,8],[42,-5],[35,-25],[20,-35],[10,-8],[0,5],[-10,8],[-17,20],[-15,32]],
+[[30,35],[55,40],[70,35],[90,22],[110,22],[125,35],[140,50],[135,65],[110,70],[80,70],[60,55],[42,42],[30,35]],
+[[115,-14],[135,-14],[152,-26],[145,-38],[128,-30],[114,-22],[115,-14]]
+];
+let a=0;
+function p(lon,lat){const lr=(lon+a)*Math.PI/180,la=lat*Math.PI/180;const x=Math.cos(la)*Math.sin(lr),y=-Math.sin(la),z=Math.cos(la)*Math.cos(lr);return[cx+x*R,cy+y*R,z];}
+function draw(){
+ctx.clearRect(0,0,S,S);
+ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#111118';ctx.fill();
+ctx.strokeStyle='rgba(212,175,55,0.06)';ctx.lineWidth=0.3;
+for(let lat=-60;lat<=60;lat+=30){ctx.beginPath();let on=false;for(let lon=-180;lon<=180;lon+=4){const[px,py,pz]=p(lon,lat);if(pz>0){if(!on){ctx.moveTo(px,py);on=true;}else ctx.lineTo(px,py);}else on=false;}ctx.stroke();}
+for(const c of CONT){if(c.map(([lo,la])=>p(lo,la)).filter(v=>v[2]>-0.1).length<2)continue;ctx.beginPath();let f=true;for(const[lo,la]of c){const[px,py,pz]=p(lo,la);if(pz>-0.1){if(f){ctx.moveTo(px,py);f=false;}else ctx.lineTo(px,py);}}ctx.closePath();ctx.fillStyle='rgba(212,175,55,0.85)';ctx.fill();}
+ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,0.35)';ctx.lineWidth=0.8;ctx.stroke();
+a+=0.3;requestAnimationFrame(draw);
+}
+draw();
 })();
 </script>
 
