@@ -30,7 +30,7 @@
 
         /* HERO */
         .hero{padding:0 40px;text-align:center;}
-        .hero-globe{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.12;pointer-events:none;}
+        .hero-globe{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.18;pointer-events:none;}
         .hero-content{position:relative;z-index:2;}
         .hero-eyebrow{font-family:var(--mono);font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:28px;}
         .hero h1{font-size:clamp(48px,9vw,104px);font-weight:300;letter-spacing:-0.03em;line-height:1;margin-bottom:24px;}
@@ -236,7 +236,7 @@
 
 <!-- 1. HERO — full viewport, globe background -->
 <section class="section hero" id="top">
-    <canvas class="hero-globe" id="globeCanvas"></canvas>
+    <canvas class="hero-globe" id="heroRadar"></canvas>
     <div class="hero-content">
         <div class="hero-eyebrow fade fade-d1">Now available on TestFlight</div>
         <h1 class="fade fade-d2">Your internet,<br><span>untethered.</span></h1>
@@ -297,7 +297,7 @@
     <div class="f-eyebrow fade" style="margin-bottom:24px;">Proximity Radar</div>
     <h2 class="fade" style="font-size:clamp(32px,4vw,48px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:48px;">See where they are.<br>In real time.</h2>
     <div class="radar-wrap">
-        <canvas class="radar-canvas" id="radarCanvas"></canvas>
+        <canvas class="radar-canvas" id="beaconGlobe"></canvas>
     </div>
     <div class="radar-legend fade">
         <span><div class="ldot lclose"></div>Immediate (&lt;2m)</span>
@@ -502,10 +502,16 @@ function submitEmail(){
 
 // GLOBE (hero background)
 (function(){
-const C=document.getElementById('globeCanvas');if(!C)return;
+const C=document.getElementById('beaconGlobe');if(!C)return;
 const ctx=C.getContext('2d');const DPR=window.devicePixelRatio||1;
-let DISPLAY=480;
-function sizeGlobe(){DISPLAY=Math.min(480,window.innerWidth*0.8);C.width=DISPLAY*DPR;C.height=DISPLAY*DPR;C.style.width=DISPLAY+'px';C.style.height=DISPLAY+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
+let DISPLAY=560;
+const BEACONS=[
+{name:'Beacon 1',lon:-100,lat:40},{name:'Beacon 2',lon:-45,lat:-15},{name:'Beacon 3',lon:15,lat:50},
+{name:'Beacon 4',lon:55,lat:25},{name:'Beacon 5',lon:105,lat:35},{name:'Beacon 6',lon:140,lat:-30},
+{name:'Beacon 7',lon:-120,lat:55},{name:'Beacon 8',lon:30,lat:-5},{name:'Beacon 9',lon:75,lat:45},
+{name:'Beacon 10',lon:-70,lat:10},{name:'Beacon 11',lon:120,lat:10},{name:'Beacon 12',lon:-10,lat:30}
+];
+function sizeGlobe(){DISPLAY=Math.min(560,window.innerWidth*0.8);C.width=DISPLAY*DPR;C.height=DISPLAY*DPR;C.style.width=DISPLAY+'px';C.style.height=DISPLAY+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
 sizeGlobe();window.addEventListener('resize',sizeGlobe);
 const CONTINENTS=[
 [[-135,55],[-130,62],[-140,68],[-155,70],[-165,65],[-168,58],[-162,55],[-155,58],[-135,55]],
@@ -533,6 +539,7 @@ for(let lat=-60;lat<=60;lat+=30){ctx.beginPath();let on=false;for(let lon=-180;l
 for(let lon=-180;lon<180;lon+=30){ctx.beginPath();let on=false;for(let lat=-90;lat<=90;lat+=2){const[px,py,pz]=proj(lon,lat);if(pz>0){if(!on){ctx.moveTo(px,py);on=true;}else ctx.lineTo(px,py);}else on=false;}ctx.stroke();}
 for(const cont of CONTINENTS){const pts=cont.map(([lo,la])=>proj(lo,la));if(pts.filter(p=>p[2]>-0.1).length<3)continue;ctx.beginPath();let first=true;for(const[lo,la]of cont){const[px,py,pz]=proj(lo,la);if(pz>-0.1){if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);}}ctx.closePath();ctx.fillStyle='rgba(212,175,55,0.85)';ctx.fill();}
 ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,0.3)';ctx.lineWidth=1.2;ctx.stroke();
+for(const b of BEACONS){const[bx,by,bz]=proj(b.lon,b.lat);if(bz>0.1){const alpha=Math.min(1,bz*1.5);const pulse=4+Math.sin(angle*0.5+b.lon)*1.5;ctx.beginPath();ctx.arc(bx,by,pulse+4,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+(alpha*0.08)+')';ctx.fill();ctx.beginPath();ctx.arc(bx,by,pulse,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+(alpha*0.15)+')';ctx.fill();ctx.beginPath();ctx.arc(bx,by,3,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+alpha+')';ctx.fill();ctx.fillStyle='rgba(255,255,255,'+(alpha*0.85)+')';ctx.font='500 9px "IBM Plex Mono"';ctx.textAlign='center';ctx.fillText(b.name,bx,by-10);}}
 const g=ctx.createRadialGradient(cx-R*0.3,cy-R*0.3,0,cx,cy,R);g.addColorStop(0,'rgba(212,175,55,0.04)');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
 angle+=0.15;requestAnimationFrame(drawGlobe);
 }
@@ -541,7 +548,7 @@ drawGlobe();
 
 // RADAR
 (function(){
-const canvas=document.getElementById('radarCanvas');if(!canvas)return;
+const canvas=document.getElementById('heroRadar');if(!canvas)return;
 const ctx=canvas.getContext('2d');let W,H,cx,cy,maxR,t=0;
 const GOLD='#D4AF37',GR='212,175,55';
 const devices=[
@@ -553,7 +560,7 @@ const devices=[
 {name:'Unknown',dist:0.78,angle:2.4,band:'2.4 GHz',rssi:-82,speed:0.0006},
 ];
 let sweepAngle=0,hoveredDevice=null,mouseX=-1,mouseY=-1;
-function resize(){const w=canvas.parentElement;const s=w.clientWidth;const dpr=window.devicePixelRatio||1;W=s;H=s;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);cx=W/2;cy=H/2;maxR=Math.min(W,H)*0.42;}
+function resize(){const w=canvas.parentElement;const s=Math.min(w.clientWidth,w.clientHeight||600,600);const dpr=window.devicePixelRatio||1;W=s;H=s;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);cx=W/2;cy=H/2;maxR=Math.min(W,H)*0.42;}
 function drawGrid(){for(let i=1;i<=4;i++){const r=maxR*(i/4);ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba('+GR+',0.08)';ctx.lineWidth=1;ctx.stroke();}ctx.font='9px "IBM Plex Mono"';ctx.fillStyle='rgba('+GR+',0.25)';ctx.textAlign='left';['2m','5m','10m','20m'].forEach(function(l,i){ctx.fillText(l,cx+maxR*((i+1)/4)+4,cy-3);});ctx.beginPath();ctx.moveTo(cx-maxR,cy);ctx.lineTo(cx+maxR,cy);ctx.moveTo(cx,cy-maxR);ctx.lineTo(cx,cy+maxR);ctx.strokeStyle='rgba('+GR+',0.06)';ctx.lineWidth=1;ctx.stroke();ctx.font='bold 11px "Space Grotesk"';ctx.fillStyle='rgba('+GR+',0.4)';ctx.textAlign='center';ctx.fillText('N',cx,cy-maxR-8);ctx.fillText('S',cx,cy+maxR+16);ctx.fillText('E',cx+maxR+12,cy+4);ctx.fillText('W',cx-maxR-12,cy+4);}
 function drawSweep(){sweepAngle+=0.012;if(sweepAngle>Math.PI*2)sweepAngle-=Math.PI*2;ctx.save();ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,maxR,sweepAngle-0.5,sweepAngle,false);ctx.closePath();const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR);grd.addColorStop(0,'rgba('+GR+',0.15)');grd.addColorStop(0.7,'rgba('+GR+',0.06)');grd.addColorStop(1,'rgba('+GR+',0)');ctx.fillStyle=grd;ctx.fill();ctx.restore();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(sweepAngle)*maxR,cy+Math.sin(sweepAngle)*maxR);ctx.strokeStyle='rgba('+GR+',0.5)';ctx.lineWidth=1.5;ctx.stroke();}
 function drawCenter(){const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,30);grad.addColorStop(0,'rgba('+GR+',0.2)');grad.addColorStop(1,'transparent');ctx.fillStyle=grad;ctx.fillRect(cx-30,cy-30,60,60);const pulseR=12+Math.sin(t*0.04)*3;ctx.beginPath();ctx.arc(cx,cy,pulseR,0,Math.PI*2);ctx.strokeStyle='rgba('+GR+',0.3)';ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.fillStyle=GOLD;ctx.fill();ctx.fillStyle='#000';ctx.font='bold 8px "Space Grotesk"';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('T',cx,cy);}
