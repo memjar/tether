@@ -5,6 +5,7 @@
 !Carmack/Carmack.xcodeproj
 xcuserdata/
 DerivedData/
+Carmack/build/
 *.o
 *.dylib
 Research/

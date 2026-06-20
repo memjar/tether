@@ -20,6 +20,7 @@ case "${1:-release}" in
     xcodebuild clean -project "$PROJECT" -scheme "$SCHEME" -configuration Release -quiet
 
     echo "[2/4] Archiving (Release)..."
+    TEAM="${DEVELOPMENT_TEAM:-237Q6KHJY6}"
     xcodebuild archive \
       -project "$PROJECT" \
       -scheme "$SCHEME" \
@@ -27,6 +28,7 @@ case "${1:-release}" in
       -archivePath "$ARCHIVE" \
       -destination "generic/platform=iOS" \
       CODE_SIGN_STYLE=Automatic \
+      DEVELOPMENT_TEAM="$TEAM" \
       -quiet
 
     echo "[3/4] Exporting IPA..."
