@@ -19,11 +19,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
     var engine: TetherEngine!
+    var apiServer: TetherAPIServer!
     var eventMonitor: Any?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         engine = TetherEngine()
         engine.start()
+
+        let predictor = NetworkPredictor()
+        let failover = FailoverEngine(monitor: engine.monitor, sharingController: engine.sharing)
+        apiServer = TetherAPIServer(
+            monitor: engine.monitor,
+            sharing: engine.sharing,
+            clients: engine.clients,
+            predictor: predictor,
+            failover: failover
+        )
+        Task { try? await apiServer.start() }
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 

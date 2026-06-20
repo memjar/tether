@@ -140,7 +140,7 @@ struct StatusView: View {
         }
     }
 
-    func sourceRow(_ src: DetectedSource) -> some View {
+    func sourceRow(_ src: DetectedInterface) -> some View {
         HStack(spacing: 8) {
             Image(systemName: iconForKind(src.kind))
                 .font(.system(size: 12))
