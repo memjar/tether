@@ -1,5 +1,8 @@
 import Foundation
 import Network
+#if canImport(UIKit)
+import UIKit
+#endif
 
 final class GhostHotspot: ObservableObject {
     @Published var hotspotActive = false
