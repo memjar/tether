@@ -4,91 +4,158 @@ import TetherEngine
 struct StatusView: View {
     @ObservedObject var engine: TetherEngine
 
+    private let gold = Color(red: 212/255, green: 175/255, blue: 55/255)
+    private let cardBg = Color(red: 0.067, green: 0.067, blue: 0.094)
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                networkSection
-                Divider()
-                signalSection
-                Divider()
+            VStack(spacing: 16) {
+                connectionCard
+                signalGauge
+                statsGrid
                 sourcesSection
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
         }
     }
 
-    var networkSection: some View {
-        Group {
-            sectionHeader("Network")
-            statusRow("Status", engine.networkStatus, color: engine.networkStatus == "Connected" ? .green : .red)
-            statusRow("Interface", "\(engine.primaryInterface) (\(engine.interfaceType))")
-            statusRow("SSID", engine.ssid ?? "—")
+    var connectionCard: some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(engine.sharingActive ? gold : (engine.networkStatus == "Connected" ? Color.blue : Color.red))
+                    .frame(width: 10, height: 10)
+                Text(engine.sharingActive ? "Beacon Active" : engine.networkStatus)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            Group {
+                Text("\(engine.primaryInterface) (\(engine.interfaceType))")
+                if let ssid = engine.ssid {
+                    Text(ssid)
+                }
+            }
+            .font(.system(size: 11, design: .monospaced))
+            .foregroundColor(.secondary)
+
             if engine.isExpensive {
-                statusRow("Metered", "Yes", color: .orange)
+                Text("METERED")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.orange)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.orange.opacity(0.15))
             }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(cardBg)
+        .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(0.08), lineWidth: 1))
+        .cornerRadius(4)
+        .padding(.horizontal, 16)
     }
 
-    var signalSection: some View {
-        Group {
-            sectionHeader("Signal")
-            signalBar
-            statusRow("RSSI", "\(engine.signalStrength) dBm")
-            statusRow("Noise", "\(engine.noiseLevel) dBm")
-            statusRow("SNR", "\(engine.signalStrength - engine.noiseLevel) dB")
-            statusRow("Tx Rate", String(format: "%.0f Mbps", engine.txRate))
+    var signalGauge: some View {
+        let snr = Double(engine.signalStrength - engine.noiseLevel)
+        let quality = min(max(snr / 50.0, 0), 1.0)
+
+        return VStack(spacing: 4) {
+            ZStack {
+                SignalArc(progress: 1.0)
+                    .stroke(Color.gray.opacity(0.15), style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .frame(width: 120, height: 70)
+                SignalArc(progress: quality)
+                    .stroke(gold, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .frame(width: 120, height: 70)
+                VStack(spacing: 0) {
+                    Text("\(Int(quality * 100))")
+                        .font(.system(size: 24, weight: .bold, design: .monospaced))
+                        .foregroundColor(.white)
+                    Text(signalLabel(quality))
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(gold)
+                }
+                .offset(y: 8)
+            }
+            .frame(height: 80)
         }
+        .padding(.horizontal, 16)
+    }
+
+    var statsGrid: some View {
+        let snr = engine.signalStrength - engine.noiseLevel
+        return VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                statCell("RSSI", "\(engine.signalStrength)", "dBm")
+                statCell("NOISE", "\(engine.noiseLevel)", "dBm")
+            }
+            HStack(spacing: 8) {
+                statCell("SNR", "\(snr)", "dB")
+                statCell("TX RATE", String(format: "%.0f", engine.txRate), "Mbps")
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    func statCell(_ label: String, _ value: String, _ unit: String) -> some View {
+        VStack(spacing: 2) {
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 20, weight: .bold, design: .monospaced))
+                    .foregroundColor(.white)
+                Text(unit)
+                    .font(.system(size: 9, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+            Text(label)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundColor(.secondary)
+                .kerning(0.5)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(cardBg)
+        .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(0.08), lineWidth: 1))
+        .cornerRadius(4)
     }
 
     var sourcesSection: some View {
-        Group {
-            sectionHeader("Sources")
+        VStack(alignment: .leading, spacing: 6) {
+            Text("SOURCES")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(.secondary)
+                .kerning(0.5)
+                .padding(.horizontal, 16)
+
             if engine.detectedSources.isEmpty {
                 Text("No sources detected")
-                    .font(.caption)
+                    .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 16)
             } else {
                 ForEach(engine.detectedSources, id: \.name) { src in
-                    HStack {
-                        Image(systemName: iconForKind(src.kind))
-                            .frame(width: 16)
-                        Text(src.kind.rawValue)
-                            .font(.system(size: 12))
-                        Spacer()
-                        Text(src.ip)
-                            .font(.system(size: 11, design: .monospaced))
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 2)
+                    sourceRow(src)
                 }
             }
         }
     }
 
-    var signalBar: some View {
-        let snr = Double(engine.signalStrength - engine.noiseLevel)
-        let quality = min(max(snr / 50.0, 0), 1.0)
-
-        return HStack(spacing: 3) {
-            ForEach(0..<5, id: \.self) { i in
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Double(i) / 5.0 < quality ? barColor(quality) : Color.gray.opacity(0.2))
-                    .frame(width: 12, height: CGFloat(8 + i * 4))
-            }
+    func sourceRow(_ src: DetectedSource) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: iconForKind(src.kind))
+                .font(.system(size: 12))
+                .foregroundColor(gold)
+                .frame(width: 16)
+            Text(src.kind.rawValue)
+                .font(.system(size: 12))
+                .foregroundColor(.white)
             Spacer()
-            Text(signalLabel(quality))
-                .font(.system(size: 11))
-                .foregroundColor(barColor(quality))
+            Text(src.ip)
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundColor(.secondary)
         }
         .padding(.horizontal, 16)
-    }
-
-    func barColor(_ q: Double) -> Color {
-        if q > 0.7 { return .green }
-        if q > 0.4 { return .yellow }
-        return .red
+        .padding(.vertical, 3)
     }
 
     func signalLabel(_ q: Double) -> String {
@@ -97,27 +164,6 @@ struct StatusView: View {
         if q > 0.4 { return "Fair" }
         if q > 0.2 { return "Weak" }
         return "Poor"
-    }
-
-    func sectionHeader(_ title: String) -> some View {
-        Text(title.uppercased())
-            .font(.system(size: 10, weight: .semibold))
-            .foregroundColor(.secondary)
-            .padding(.horizontal, 16)
-    }
-
-    func statusRow(_ label: String, _ value: String, color: Color? = nil) -> some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 12))
-                .foregroundColor(.secondary)
-            Spacer()
-            Text(value)
-                .font(.system(size: 12, design: .monospaced))
-                .foregroundColor(color ?? .primary)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 1)
     }
 
     func iconForKind(_ kind: InterfaceKind) -> String {
@@ -130,5 +176,19 @@ struct StatusView: View {
         case .bluetooth: return "wave.3.right"
         case .unknown: return "questionmark.circle"
         }
+    }
+}
+
+struct SignalArc: Shape {
+    var progress: Double
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let center = CGPoint(x: rect.midX, y: rect.maxY)
+        let radius = min(rect.width, rect.height * 2) / 2
+        let startAngle = Angle(degrees: -180)
+        let endAngle = Angle(degrees: -180 + (180 * progress))
+        path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
+        return path
     }
 }
