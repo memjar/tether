@@ -10,77 +10,89 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-        :root{--accent:#D4AF37;--dark:#0a0a0c;--text:#e5e5e5;--dim:#737373;--mono:'IBM Plex Mono',monospace;}
+        :root{--accent:#D4AF37;--dark:#0a0a0c;--card:#111113;--text:#e5e5e5;--dim:#737373;--mono:'IBM Plex Mono',monospace;}
         html{scroll-behavior:smooth;}
         body{font-family:'Space Grotesk',sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 
         /* NAV */
-        nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;transition:background 0.3s,border 0.3s;border-bottom:1px solid transparent;}
-        nav.scrolled{background:rgba(10,10,12,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom-color:rgba(212,175,55,0.1);}
-        .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:300;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;color:#fff;}
+        nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;transition:background 0.3s,border 0.3s;border-bottom:1px solid transparent;}
+        nav.scrolled{background:rgba(10,10,12,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom-color:rgba(255,255,255,0.06);}
+        .logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:300;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;color:#fff;}
         .logo-globe{width:32px;height:32px;border-radius:50%;}
-        .nav-links{display:flex;gap:28px;align-items:center;}
-        .nav-links a{color:var(--dim);text-decoration:none;font-size:13px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}
+        .nav-links{display:flex;gap:32px;align-items:center;}
+        .nav-links a{color:var(--dim);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s;}
         .nav-links a:hover{color:#fff;}
-        .nav-cta{border:1.5px solid #fff;padding:8px 24px;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#fff !important;transition:all 0.2s;}
-        .nav-cta:hover{background:#fff;color:#000 !important;}
+        .nav-cta{background:var(--accent);padding:10px 28px;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#000 !important;transition:all 0.2s;}
+        .nav-cta:hover{background:#fff;}
 
-        /* SECTIONS */
+        /* FULL SECTIONS */
         .section{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 
         /* HERO */
         .hero{padding:0 40px;text-align:center;}
-        .hero-globe{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.15;pointer-events:none;}
+        .hero-globe{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.12;pointer-events:none;}
         .hero-content{position:relative;z-index:2;}
-        .hero-badge{display:inline-block;padding:6px 16px;border:1px solid rgba(212,175,55,0.3);font-size:12px;color:var(--accent);font-family:var(--mono);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:32px;}
-        .hero h1{font-size:clamp(42px,8vw,96px);font-weight:300;letter-spacing:-0.03em;line-height:1.05;margin-bottom:24px;
-            background:linear-gradient(110deg,#fff 0%,#fff 35%,var(--accent) 50%,#fff 65%,#fff 100%);
-            background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 7s ease-in-out infinite;}
-        @keyframes shimmer{0%{background-position:100% 0;}50%{background-position:0% 0;}100%{background-position:100% 0;}}
-        .hero h1 span{-webkit-text-fill-color:var(--accent);}
-        .hero p{font-size:clamp(16px,2vw,20px);color:var(--dim);max-width:520px;margin:0 auto 48px;font-weight:300;line-height:1.6;}
-        .hero-cta{display:inline-block;padding:16px 48px;border:1.5px solid #fff;font-size:15px;font-weight:600;color:#fff;text-decoration:none;letter-spacing:0.04em;transition:all 0.2s;}
-        .hero-cta:hover{background:#fff;color:#000;transform:translateY(-2px);}
-        .scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--dim);font-size:11px;font-family:var(--mono);letter-spacing:0.1em;text-transform:uppercase;animation:float 2s ease-in-out infinite;}
+        .hero-eyebrow{font-family:var(--mono);font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:28px;}
+        .hero h1{font-size:clamp(48px,9vw,104px);font-weight:300;letter-spacing:-0.03em;line-height:1;margin-bottom:24px;}
+        .hero h1 span{color:var(--accent);}
+        .hero p{font-size:clamp(15px,1.8vw,19px);color:var(--dim);max-width:480px;margin:0 auto 48px;font-weight:300;line-height:1.7;}
+        .hero-cta{display:inline-block;padding:16px 56px;background:var(--accent);font-size:14px;font-weight:600;color:#000;text-decoration:none;letter-spacing:0.04em;transition:all 0.2s;}
+        .hero-cta:hover{background:#fff;transform:translateY(-2px);}
+        .scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--dim);font-size:10px;font-family:var(--mono);letter-spacing:0.1em;text-transform:uppercase;animation:float 2s ease-in-out infinite;}
         @keyframes float{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
-        .scroll-arrow{width:20px;height:20px;border-right:1.5px solid var(--dim);border-bottom:1.5px solid var(--dim);transform:rotate(45deg);}
+        .scroll-arrow{width:16px;height:16px;border-right:1.5px solid var(--dim);border-bottom:1.5px solid var(--dim);transform:rotate(45deg);}
 
-        /* RADAR */
-        .radar-section{background:var(--dark);}
-        .radar-wrap{width:min(600px,80vw);aspect-ratio:1;position:relative;}
-        .radar-canvas{width:100%;height:100%;display:block;}
-        .radar-stats{position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);display:flex;gap:48px;white-space:nowrap;}
+        /* STATS BAR */
+        .stats-bar{background:var(--dark);border-top:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04);padding:64px 40px;display:flex;justify-content:center;gap:80px;flex-wrap:wrap;}
         .stat{text-align:center;}
-        .stat-val{font-size:36px;font-weight:600;font-family:var(--mono);color:var(--accent);line-height:1;}
-        .stat-unit{font-size:12px;color:var(--dim);font-family:var(--mono);}
-        .stat-label{font-size:10px;color:#525252;margin-top:4px;text-transform:uppercase;letter-spacing:0.1em;}
-        .radar-legend{display:flex;gap:24px;margin-top:120px;font-size:11px;font-family:var(--mono);color:var(--dim);}
+        .stat-val{font-size:48px;font-weight:600;font-family:var(--mono);color:var(--accent);line-height:1;}
+        .stat-label{font-size:11px;color:var(--dim);margin-top:8px;text-transform:uppercase;letter-spacing:0.1em;font-weight:500;}
+
+        /* FULL-BLEED FEATURE SECTIONS (Starlink-style) */
+        .feature-full{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 40px;position:relative;}
+        .feature-full::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,0.03) 0%,transparent 70%);pointer-events:none;}
+        .feature-full .f-eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:20px;display:flex;align-items:center;gap:12px;justify-content:center;}
+        .feature-full .f-eyebrow::before,.feature-full .f-eyebrow::after{content:"";width:24px;height:1px;background:var(--accent);opacity:0.4;}
+        .feature-full h2{font-size:clamp(36px,5vw,64px);font-weight:300;letter-spacing:-0.02em;line-height:1.1;margin-bottom:20px;max-width:700px;}
+        .feature-full p{font-size:17px;color:var(--dim);line-height:1.7;max-width:520px;margin:0 auto;}
+        .feature-full .f-visual{margin-top:64px;width:100%;max-width:560px;}
+
+        /* ALTERNATING BG */
+        .bg-dark{background:var(--dark);}
+        .bg-black{background:#000;}
+
+        /* SPLIT PANEL SECTIONS */
+        .panel{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;}
+        .panel-reverse{direction:rtl;}
+        .panel-reverse > *{direction:ltr;}
+        .panel-visual{display:flex;align-items:center;justify-content:center;padding:80px;min-height:100vh;background:var(--dark);}
+        .panel-text{padding:80px 72px;}
+        .panel-label{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+        .panel-label::before{content:"";width:20px;height:1px;background:var(--accent);}
+        .panel-text h2{font-size:clamp(32px,4vw,52px);font-weight:300;letter-spacing:-0.02em;line-height:1.1;margin-bottom:20px;}
+        .panel-text p{font-size:16px;color:var(--dim);line-height:1.7;max-width:400px;margin-bottom:24px;}
+        .panel-text .panel-cta{display:inline-block;padding:12px 32px;border:1.5px solid rgba(255,255,255,0.15);font-size:13px;font-weight:600;color:#fff;text-decoration:none;letter-spacing:0.04em;transition:all 0.2s;}
+        .panel-text .panel-cta:hover{background:#fff;color:#000;border-color:#fff;}
+        .panel-icon{width:140px;height:140px;display:flex;align-items:center;justify-content:center;}
+        .panel-icon svg{width:90px;height:90px;}
+
+        /* RADAR SECTION */
+        .radar-section{background:var(--dark);}
+        .radar-wrap{width:min(560px,80vw);aspect-ratio:1;position:relative;}
+        .radar-canvas{width:100%;height:100%;display:block;}
+        .radar-legend{display:flex;gap:24px;margin-top:48px;font-size:11px;font-family:var(--mono);color:var(--dim);}
         .radar-legend span{display:flex;align-items:center;gap:6px;}
         .ldot{width:8px;height:8px;border-radius:50%;}
         .lclose{background:var(--accent);}
         .lmid{background:rgba(212,175,55,0.5);}
         .lfar{background:rgba(212,175,55,0.25);}
 
-        /* FEATURE PANELS */
-        .panel{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;}
-        .panel-reverse{direction:rtl;}
-        .panel-reverse > *{direction:ltr;}
-        .panel-visual{display:flex;align-items:center;justify-content:center;padding:60px;min-height:100vh;background:var(--dark);}
-        .panel-text{padding:80px 60px;}
-        .panel-label{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
-        .panel-label::before{content:"";width:20px;height:1px;background:var(--accent);}
-        .panel-text h2{font-size:clamp(32px,4vw,56px);font-weight:300;letter-spacing:-0.02em;line-height:1.1;margin-bottom:20px;}
-        .panel-text p{font-size:16px;color:var(--dim);line-height:1.7;max-width:420px;}
-        .panel-icon{width:120px;height:120px;display:flex;align-items:center;justify-content:center;}
-        .panel-icon svg{width:80px;height:80px;}
-
-        /* DEVICES */
+        /* DEVICE LIST SECTION */
         .devices-section{background:#000;padding:120px 40px;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-        .devices-section .panel-label{margin-bottom:12px;}
         .devices-section h2{font-size:clamp(32px,4vw,56px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:60px;}
         .device-list{max-width:560px;width:100%;}
-        .device-row{display:flex;align-items:center;gap:16px;padding:16px 24px;border:1px solid rgba(212,175,55,0.08);margin-bottom:8px;transition:border-color 0.2s;}
-        .device-row:hover{border-color:rgba(212,175,55,0.3);}
+        .device-row{display:flex;align-items:center;gap:16px;padding:16px 24px;border:1px solid rgba(255,255,255,0.04);margin-bottom:6px;transition:border-color 0.2s,background 0.2s;}
+        .device-row:hover{border-color:rgba(212,175,55,0.2);background:rgba(212,175,55,0.02);}
         .device-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.1);}
         .device-info{flex:1;}
         .device-name{font-size:14px;font-weight:600;}
@@ -94,18 +106,40 @@
         .signal-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.1);}
         .signal-dot.active{background:var(--accent);}
 
-        /* SPECS */
-        .specs-section{background:var(--dark);min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px;}
-        .specs-section h2{font-size:clamp(28px,4vw,48px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:60px;}
-        .spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;max-width:800px;width:100%;}
+        /* SPECS GRID */
+        .specs-section{background:var(--dark);min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 40px;}
+        .specs-section h2{font-size:clamp(28px,4vw,48px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:64px;}
+        .spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:48px;max-width:800px;width:100%;}
         .spec-item{text-align:center;}
-        .spec-value{font-size:40px;font-weight:600;font-family:var(--mono);color:var(--accent);margin-bottom:4px;}
+        .spec-value{font-size:42px;font-weight:600;font-family:var(--mono);color:var(--accent);margin-bottom:6px;}
         .spec-label{font-size:12px;color:var(--dim);font-weight:500;text-transform:uppercase;letter-spacing:0.06em;}
+
+        /* USE CASES */
+        .usecases{padding:120px 40px;display:flex;flex-direction:column;align-items:center;background:#000;}
+        .usecases h2{font-size:clamp(32px,4vw,56px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:16px;}
+        .usecases > p{font-size:17px;color:var(--dim);text-align:center;margin-bottom:72px;max-width:480px;}
+        .uc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:960px;width:100%;}
+        .uc-card{background:var(--card);padding:48px 36px;transition:background 0.2s;}
+        .uc-card:hover{background:rgba(212,175,55,0.04);}
+        .uc-icon{margin-bottom:24px;}
+        .uc-icon svg{width:40px;height:40px;}
+        .uc-card h3{font-size:18px;font-weight:600;margin-bottom:10px;letter-spacing:-0.01em;}
+        .uc-card p{font-size:14px;color:var(--dim);line-height:1.6;}
+
+        /* HOW IT WORKS */
+        .how{padding:120px 40px;background:var(--dark);display:flex;flex-direction:column;align-items:center;}
+        .how h2{font-size:clamp(32px,4vw,56px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:72px;}
+        .steps{display:flex;gap:0;max-width:960px;width:100%;}
+        .step{flex:1;padding:40px 36px;position:relative;border-left:1px solid rgba(212,175,55,0.1);}
+        .step:first-child{border-left:none;}
+        .step-num{font-family:var(--mono);font-size:48px;font-weight:600;color:var(--accent);opacity:0.2;margin-bottom:20px;line-height:1;}
+        .step h3{font-size:18px;font-weight:600;margin-bottom:10px;}
+        .step p{font-size:14px;color:var(--dim);line-height:1.6;}
 
         /* CTA */
         .cta-section{background:#000;text-align:center;padding:0 40px;}
-        .cta-section h2{font-size:clamp(36px,5vw,64px);font-weight:300;letter-spacing:-0.02em;margin-bottom:16px;}
-        .cta-section p{color:var(--dim);margin-bottom:40px;font-size:16px;}
+        .cta-section h2{font-size:clamp(40px,6vw,72px);font-weight:300;letter-spacing:-0.02em;margin-bottom:16px;}
+        .cta-section > p{color:var(--dim);margin-bottom:48px;font-size:17px;}
         .download-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;}
         .dl-btn{display:flex;align-items:center;gap:12px;padding:16px 32px;border:1.5px solid rgba(255,255,255,0.15);background:transparent;color:#fff;text-decoration:none;font-family:'Space Grotesk',sans-serif;transition:all 0.2s;}
         .dl-btn:hover{background:#fff;color:#000;border-color:#fff;transform:translateY(-2px);}
@@ -129,32 +163,59 @@
         .email-form button:hover{background:#fff;color:#000;border-color:#fff;}
 
         /* FOOTER */
-        footer{padding:40px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);}
-        footer p{font-size:12px;color:#525252;font-family:var(--mono);}
-        footer a{color:var(--accent);text-decoration:none;}
+        .footer{border-top:1px solid rgba(255,255,255,0.04);padding:64px 48px 40px;}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;max-width:960px;margin:0 auto 48px;}
+        .footer-brand{font-size:18px;font-weight:300;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;}
+        .footer-brand-sub{font-size:13px;color:var(--dim);line-height:1.6;max-width:260px;}
+        .footer-brand-co{font-size:11px;color:var(--accent);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.08em;margin-top:16px;}
+        .footer-brand-co a{color:var(--accent);text-decoration:none;transition:color 0.2s;}
+        .footer-brand-co a:hover{color:#fff;}
+        .footer-col h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:16px;}
+        .footer-col a{display:block;font-size:13px;color:var(--dim);text-decoration:none;margin-bottom:10px;transition:color 0.2s;}
+        .footer-col a:hover{color:#fff;}
+        .footer-bottom{text-align:center;padding-top:32px;border-top:1px solid rgba(255,255,255,0.04);}
+        .footer-bottom p{font-size:12px;color:#525252;font-family:var(--mono);}
+        .footer-bottom a{color:var(--accent);text-decoration:none;}
 
         /* RESPONSIVE */
         @media(max-width:768px){
             nav{padding:16px 20px;}
             .nav-links a:not(.nav-cta){display:none;}
             .panel{grid-template-columns:1fr;min-height:auto;}
-            .panel-visual{min-height:50vh;}
-            .panel-text{padding:40px 24px;}
+            .panel-visual{min-height:50vh;padding:60px 40px;}
+            .panel-text{padding:48px 24px;}
             .panel-reverse{direction:ltr;}
             .spec-grid{grid-template-columns:repeat(2,1fr);}
-            .radar-stats{gap:24px;}
-            .stat-val{font-size:24px;}
+            .stats-bar{gap:40px;padding:48px 24px;}
+            .stat-val{font-size:36px;}
             .hero{padding:0 20px;}
             .devices-section{padding:80px 20px;}
             .download-buttons{flex-direction:column;align-items:center;}
             .dl-btn{width:100%;max-width:300px;justify-content:center;}
             .email-form{flex-direction:column;}
             .email-form input{border-right:1.5px solid rgba(255,255,255,0.15);border-bottom:none;}
+            .uc-grid{grid-template-columns:1fr;}
+            .steps{flex-direction:column;}
+            .step{border-left:none;border-top:1px solid rgba(212,175,55,0.1);}
+            .step:first-child{border-top:none;}
+            .footer-grid{grid-template-columns:1fr 1fr;gap:32px;}
         }
 
-        @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
-        .fade{opacity:0;transform:translateY(30px);transition:opacity 0.8s,transform 0.8s;}
+        /* ANIMATIONS */
+        .fade{opacity:0;transform:translateY(30px);transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1),transform 0.9s cubic-bezier(0.16,1,0.3,1);}
         .fade.visible{opacity:1;transform:translateY(0);}
+        .fade-d1{transition-delay:0.1s;}
+        .fade-d2{transition-delay:0.2s;}
+        .fade-d3{transition-delay:0.3s;}
+        .fade-d4{transition-delay:0.4s;}
+
+        /* SUBTLE HOVER LIFTS */
+        .uc-card{transition:background 0.3s,transform 0.3s;}
+        .uc-card:hover{transform:translateY(-4px);}
+        .device-row{transition:border-color 0.3s,background 0.3s,transform 0.3s;}
+        .device-row:hover{transform:translateX(4px);}
+        .step{transition:background 0.3s;}
+        .step:hover{background:rgba(212,175,55,0.02);}
     </style>
 </head>
 <body>
@@ -165,75 +226,87 @@
         Tether
     </a>
     <div class="nav-links">
-        <a href="#radar">Radar</a>
         <a href="#features">Features</a>
+        <a href="#radar">Radar</a>
         <a href="#devices">Devices</a>
+        <a href="#usecases">Use Cases</a>
         <a href="#download" class="nav-cta">Download</a>
     </div>
 </nav>
 
+<!-- 1. HERO — full viewport, globe background -->
 <section class="section hero" id="top">
     <canvas class="hero-globe" id="globeCanvas"></canvas>
     <div class="hero-content">
-        <div class="hero-badge fade">v0.1.0 — macOS + iOS</div>
-        <h1 class="fade">Your internet,<br><span>untethered.</span></h1>
-        <p class="fade">Open a beacon from any connection. AI-powered failover, proximity radar, and device management from your menubar.</p>
-        <a href="#download" class="hero-cta fade">Download Now</a>
+        <div class="hero-eyebrow fade fade-d1">Now available on TestFlight</div>
+        <h1 class="fade fade-d2">Your internet,<br><span>untethered.</span></h1>
+        <p class="fade fade-d3">Turn any connection into a shared WiFi beacon. AI-powered failover, device management, and proximity radar from your menubar.</p>
+        <a href="#download" class="hero-cta fade fade-d4">Download Now</a>
     </div>
     <div class="scroll-hint"><span>Scroll</span><div class="scroll-arrow"></div></div>
 </section>
 
-<section class="section radar-section" id="radar">
-    <div class="radar-wrap">
-        <canvas class="radar-canvas" id="radarCanvas"></canvas>
-        <div class="radar-stats">
-            <div class="stat"><div class="stat-val" id="statDown">0</div><div class="stat-unit">Mbps</div><div class="stat-label">Download</div></div>
-            <div class="stat"><div class="stat-val" id="statUp">0</div><div class="stat-unit">Mbps</div><div class="stat-label">Upload</div></div>
-            <div class="stat"><div class="stat-val" id="statDevices">0</div><div class="stat-unit">active</div><div class="stat-label">Devices</div></div>
-            <div class="stat"><div class="stat-val" id="statLatency">0</div><div class="stat-unit">ms</div><div class="stat-label">Latency</div></div>
-        </div>
-    </div>
-    <div class="radar-legend">
-        <span><div class="ldot lclose"></div>Close (&lt;5m)</span>
-        <span><div class="ldot lmid"></div>Mid (5-15m)</span>
-        <span><div class="ldot lfar"></div>Far (&gt;15m)</span>
+<!-- 2. STATS BAR — key numbers -->
+<div class="stats-bar">
+    <div class="stat fade"><div class="stat-val" id="statSources">7</div><div class="stat-label">Connection Sources</div></div>
+    <div class="stat fade"><div class="stat-val" id="statLatency">4</div><div class="stat-label">ms Latency</div></div>
+    <div class="stat fade"><div class="stat-val" id="statSize">&lt;10</div><div class="stat-label">MB App Size</div></div>
+    <div class="stat fade"><div class="stat-val" id="statDeps">0</div><div class="stat-label">Dependencies</div></div>
+</div>
+
+<!-- 3. FEATURE — Beacon (full-bleed centered) -->
+<section class="feature-full bg-black" id="features">
+    <div class="f-eyebrow fade">Beacon</div>
+    <h2 class="fade">Open a beacon<br>from anything.</h2>
+    <p class="fade">Bridge any connection into a shared WiFi network. Cellular, Ethernet, Thunderbolt, iPhone USB, Bluetooth PAN. One click to go live.</p>
+    <div class="f-visual fade">
+        <svg viewBox="0 0 560 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+            <rect x="180" y="60" width="200" height="80" rx="4" stroke="#D4AF37" stroke-width="1.5" fill="rgba(212,175,55,0.03)"/>
+            <text x="280" y="105" text-anchor="middle" fill="#D4AF37" font-family="IBM Plex Mono" font-size="13" font-weight="600">BEACON ACTIVE</text>
+            <circle cx="80" cy="100" r="20" stroke="#D4AF37" stroke-width="1" opacity="0.4"/><text x="80" y="104" text-anchor="middle" fill="#737373" font-family="IBM Plex Mono" font-size="9">ETH</text>
+            <circle cx="480" cy="100" r="20" stroke="#D4AF37" stroke-width="1" opacity="0.4"/><text x="480" y="104" text-anchor="middle" fill="#737373" font-family="IBM Plex Mono" font-size="9">WiFi</text>
+            <line x1="100" y1="100" x2="180" y2="100" stroke="#D4AF37" stroke-width="1" opacity="0.3"/>
+            <line x1="380" y1="100" x2="460" y2="100" stroke="#D4AF37" stroke-width="1" opacity="0.3"/>
+            <circle cx="40" cy="50" r="12" stroke="#D4AF37" stroke-width="0.8" opacity="0.2"/><text x="40" y="53" text-anchor="middle" fill="#525252" font-family="IBM Plex Mono" font-size="7">LTE</text>
+            <circle cx="40" cy="150" r="12" stroke="#D4AF37" stroke-width="0.8" opacity="0.2"/><text x="40" y="153" text-anchor="middle" fill="#525252" font-family="IBM Plex Mono" font-size="7">USB</text>
+            <circle cx="520" cy="50" r="12" stroke="#D4AF37" stroke-width="0.8" opacity="0.2"/>
+            <circle cx="520" cy="150" r="12" stroke="#D4AF37" stroke-width="0.8" opacity="0.2"/>
+            <line x1="52" y1="56" x2="180" y2="85" stroke="#D4AF37" stroke-width="0.5" opacity="0.15"/>
+            <line x1="52" y1="144" x2="180" y2="115" stroke="#D4AF37" stroke-width="0.5" opacity="0.15"/>
+            <line x1="380" y1="85" x2="508" y2="56" stroke="#D4AF37" stroke-width="0.5" opacity="0.15"/>
+            <line x1="380" y1="115" x2="508" y2="144" stroke="#D4AF37" stroke-width="0.5" opacity="0.15"/>
+        </svg>
     </div>
 </section>
 
-<div id="features">
-<div class="panel">
+<!-- 4. SPLIT PANEL — Device Control -->
+<div class="panel" id="control">
     <div class="panel-visual">
-        <div class="panel-icon"><svg viewBox="0 0 80 80" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"><circle cx="40" cy="48" r="6"/><path d="M28 22a18 18 0 0 1 24 0M20 14a28 28 0 0 1 40 0"/><line x1="40" y1="54" x2="40" y2="70"/></svg></div>
-    </div>
-    <div class="panel-text">
-        <div class="panel-label">Beacon</div>
-        <h2>Open a beacon from anything.</h2>
-        <p>Bridge any connection into a shared WiFi network. Cellular, Ethernet, Thunderbolt, iPhone USB, Bluetooth. One tap to go live.</p>
-    </div>
-</div>
-
-<div class="panel panel-reverse">
-    <div class="panel-visual">
-        <div class="panel-icon"><svg viewBox="0 0 80 80" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M40 10l28 14v18c0 17-12 29-28 34-16-5-28-17-28-34V24l28-14z"/></svg></div>
+        <div class="panel-icon"><svg viewBox="0 0 80 80" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M40 10l28 14v18c0 17-12 29-28 34-16-5-28-17-28-34V24l28-14z"/><polyline points="28 42 36 50 52 34"/></svg></div>
     </div>
     <div class="panel-text">
         <div class="panel-label">Control</div>
         <h2>See every device. Control every byte.</h2>
-        <p>Pause freeloaders, kick unknowns, prioritize what matters. PF firewall-level control from your menubar.</p>
+        <p>Pause freeloaders, kick unknowns, prioritize what matters. PF firewall-level control from your menubar. Per-device bandwidth stats in real time.</p>
+        <a href="#devices" class="panel-cta">View Devices</a>
     </div>
 </div>
 
-<div class="panel">
-    <div class="panel-visual">
-        <div class="panel-icon"><svg viewBox="0 0 80 80" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"><circle cx="40" cy="40" r="28"/><circle cx="40" cy="40" r="16"/><circle cx="40" cy="40" r="3" fill="#D4AF37"/><line x1="40" y1="40" x2="60" y2="20"/></svg></div>
+<!-- 5. RADAR — full-bleed interactive -->
+<section class="section radar-section" id="radar">
+    <div class="f-eyebrow fade" style="margin-bottom:24px;">Proximity Radar</div>
+    <h2 class="fade" style="font-size:clamp(32px,4vw,48px);font-weight:300;letter-spacing:-0.02em;text-align:center;margin-bottom:48px;">See where they are.<br>In real time.</h2>
+    <div class="radar-wrap">
+        <canvas class="radar-canvas" id="radarCanvas"></canvas>
     </div>
-    <div class="panel-text">
-        <div class="panel-label">Radar</div>
-        <h2>See where they are. In real time.</h2>
-        <p>Bluetooth-assisted proximity mapping shows every device's position relative to your beacon. RSSI-powered, zero configuration.</p>
+    <div class="radar-legend fade">
+        <span><div class="ldot lclose"></div>Immediate (&lt;2m)</span>
+        <span><div class="ldot lmid"></div>Near (2-10m)</span>
+        <span><div class="ldot lfar"></div>Far (&gt;10m)</span>
     </div>
-</div>
+</section>
 
+<!-- 6. SPLIT PANEL — AI Failover (reversed) -->
 <div class="panel panel-reverse">
     <div class="panel-visual">
         <div class="panel-icon"><svg viewBox="0 0 80 80" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"><circle cx="40" cy="40" r="10"/><circle cx="16" cy="24" r="5"/><circle cx="64" cy="24" r="5"/><circle cx="16" cy="56" r="5"/><circle cx="64" cy="56" r="5"/><path d="M32 34l-11-6M48 34l11-6M32 46l-11 6M48 46l11 6"/></svg></div>
@@ -241,18 +314,19 @@
     <div class="panel-text">
         <div class="panel-label">Intelligence</div>
         <h2>AI that predicts the drop.</h2>
-        <p>Predicts connection failures before they happen. Auto-switches to the next best interface with zero downtime. Learns your environment.</p>
+        <p>Monitors signal quality across all interfaces. Predicts failures before they happen and auto-switches to the next best source. Zero downtime. Zero intervention.</p>
+        <a href="#" class="panel-cta">Learn More</a>
     </div>
 </div>
-</div>
 
+<!-- 7. DEVICE LIST — demo UI -->
 <section class="devices-section" id="devices">
-    <div class="panel-label" style="text-align:center;justify-content:center;">Device Management</div>
-    <h2>See everything on your network.</h2>
-    <div class="device-list">
+    <div class="f-eyebrow fade" style="margin-bottom:16px;justify-content:center;">Device Management</div>
+    <h2 class="fade">See everything on your network.</h2>
+    <div class="device-list fade">
         <div class="device-row">
             <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="14" height="10" rx="1.5"/><path d="M1 16h18"/></svg></div>
-            <div class="device-info"><div class="device-name">MacBook Pro</div><div class="device-meta">192.168.1.101 · This device</div></div>
+            <div class="device-info"><div class="device-name">MacBook Pro</div><div class="device-meta">192.168.1.101 -- This device</div></div>
             <div class="device-badges"><span class="badge badge-band">5 GHz</span><span class="badge badge-speed">Fast</span></div>
             <div class="signal-dots"><div class="signal-dot active"></div><div class="signal-dot active"></div><div class="signal-dot active"></div><div class="signal-dot active"></div><div class="signal-dot active"></div></div>
         </div>
@@ -269,26 +343,97 @@
             <div class="signal-dots"><div class="signal-dot active"></div><div class="signal-dot active"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div>
         </div>
         <div class="device-row">
+            <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="5" width="14" height="10" rx="1.5"/><path d="M6 5V3h8v2"/></svg></div>
+            <div class="device-info"><div class="device-name">iPad Air</div><div class="device-meta">192.168.1.112</div></div>
+            <div class="device-badges"><span class="badge badge-band">5 GHz</span></div>
+            <div class="signal-dots"><div class="signal-dot active"></div><div class="signal-dot active"></div><div class="signal-dot active"></div><div class="signal-dot"></div><div class="signal-dot"></div></div>
+        </div>
+        <div class="device-row">
             <div class="device-icon"><svg width="20" height="20" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M8 8a2 2 0 1 1 4 0c0 1.5-2 2-2 3"/><circle cx="10" cy="14" r="0.5" fill="#D4AF37"/></svg></div>
-            <div class="device-info"><div class="device-name">Unknown</div><div class="device-meta">a6:83:1d:XX:XX:XX · Paused</div></div>
+            <div class="device-info"><div class="device-name">Unknown</div><div class="device-meta">a6:83:1d:XX:XX:XX -- Paused</div></div>
             <div class="device-badges"><span class="badge badge-band">2.4 GHz</span></div>
             <div class="signal-dots"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div>
         </div>
     </div>
 </section>
 
-<section class="specs-section" id="specs">
+<!-- 8. USE CASES — 3-column grid -->
+<section class="usecases" id="usecases">
+    <div class="f-eyebrow fade">Use Cases</div>
+    <h2 class="fade">Built for the field.</h2>
+    <p class="fade">Wherever you need internet, Tether turns one connection into many.</p>
+    <div class="uc-grid fade">
+        <div class="uc-card">
+            <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M8 32l6-12 6 8 6-16 6 10"/><rect x="4" y="4" width="32" height="28" rx="2"/></svg></div>
+            <h3>Remote Work</h3>
+            <p>Hotel WiFi drops? Tether fails over to your phone's LTE without dropping your Zoom. Seamless.</p>
+        </div>
+        <div class="uc-card">
+            <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="20" cy="16" r="6"/><path d="M8 36c0-6 5-12 12-12s12 6 12 12"/><circle cx="32" cy="10" r="4" opacity="0.4"/><circle cx="8" cy="10" r="4" opacity="0.4"/></svg></div>
+            <h3>Team Sharing</h3>
+            <p>One Ethernet port, six people. Share your connection with the crew and manage who gets bandwidth.</p>
+        </div>
+        <div class="uc-card">
+            <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M6 20h28M20 6v28"/><circle cx="20" cy="20" r="14"/><ellipse cx="20" cy="20" rx="8" ry="14"/></svg></div>
+            <h3>Travel</h3>
+            <p>Turn airport lounge WiFi into a private hotspot for all your devices. Encrypted, controlled, yours.</p>
+        </div>
+        <div class="uc-card">
+            <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><rect x="8" y="6" width="24" height="28" rx="2"/><path d="M14 14h12M14 20h8M14 26h10"/></svg></div>
+            <h3>Events</h3>
+            <p>Pop up a beacon at the venue. Track how many devices connect, throttle bandwidth hogs, kill it when you leave.</p>
+        </div>
+        <div class="uc-card">
+            <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M20 4v8M4 20h8M28 20h8M20 28v8"/><circle cx="20" cy="20" r="6"/><circle cx="20" cy="20" r="14"/></svg></div>
+            <h3>Vehicles</h3>
+            <p>Mount your Mac in the van, tether your phone, and share WiFi with every device on board. Road warrior mode.</p>
+        </div>
+        <div class="uc-card">
+            <div class="uc-icon"><svg viewBox="0 0 40 40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M12 28V16l8-8 8 8v12"/><path d="M18 28v-6h4v6"/><path d="M4 18l16-14 16 14"/></svg></div>
+            <h3>Home Backup</h3>
+            <p>ISP goes down? Tether detects the drop and fails over to cellular. Your smart home stays connected.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 9. HOW IT WORKS — 3 steps -->
+<section class="how">
+    <div class="f-eyebrow fade">How It Works</div>
+    <h2 class="fade">Three steps. Zero config.</h2>
+    <div class="steps fade">
+        <div class="step">
+            <div class="step-num">01</div>
+            <h3>Open Beacon</h3>
+            <p>Click the menubar icon, select your source connection, and open your beacon. Your Mac becomes a WiFi access point.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">02</div>
+            <h3>Connect Devices</h3>
+            <p>Other devices join your beacon like any WiFi network. The companion app shows them on the radar in real time.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">03</div>
+            <h3>Stay in Control</h3>
+            <p>Monitor bandwidth, pause devices, get alerts on new connections. AI handles failover if your source drops.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 10. SPECS -->
+<section class="specs-section">
+    <div class="f-eyebrow fade">Technical</div>
     <h2 class="fade">Built different.</h2>
     <div class="spec-grid fade">
         <div class="spec-item"><div class="spec-value">&lt;10MB</div><div class="spec-label">App Size</div></div>
         <div class="spec-item"><div class="spec-value">5s</div><div class="spec-label">Refresh</div></div>
-        <div class="spec-item"><div class="spec-value">7</div><div class="spec-label">Endpoints</div></div>
+        <div class="spec-item"><div class="spec-value">PF</div><div class="spec-label">Firewall</div></div>
         <div class="spec-item"><div class="spec-value">0</div><div class="spec-label">Dependencies</div></div>
     </div>
 </section>
 
+<!-- 11. DOWNLOAD CTA -->
 <section class="section cta-section" id="download">
-    <h2 class="fade">Download Tether.</h2>
+    <h2 class="fade">Get Tether.</h2>
     <p class="fade">Available now on TestFlight. macOS coming soon.</p>
     <div class="download-buttons fade">
         <a href="#" id="testflight-btn" class="dl-btn dl-btn-primary" onclick="return false;">
@@ -308,8 +453,36 @@
     <p id="form-msg" style="margin-top:20px;font-size:13px;display:none;"></p>
 </section>
 
-<footer>
-    <p>tether.diy — <a href="https://github.com/memjar/tether">GitHub</a> — <a href="https://axetechnologies.ca">AXE Technologies</a></p>
+<!-- 12. FOOTER -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand">Tether</div>
+            <div class="footer-brand-sub">Smart network sharing for macOS and iOS.</div>
+            <div class="footer-brand-co">An <a href="https://axetechnologies.ca">AXE Technologies</a> Company</div>
+        </div>
+        <div class="footer-col">
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#radar">Radar</a>
+            <a href="#devices">Devices</a>
+            <a href="#download">Download</a>
+        </div>
+        <div class="footer-col">
+            <h4>Resources</h4>
+            <a href="https://github.com/memjar/tether">GitHub</a>
+            <a href="https://github.com/memjar/tether/issues">Issues</a>
+            <a href="https://github.com/memjar/tether/releases">Releases</a>
+        </div>
+        <div class="footer-col">
+            <h4>Company</h4>
+            <a href="https://axetechnologies.ca">AXE Technologies</a>
+            <a href="https://tether.diy">tether.diy</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>tether.diy &mdash; <a href="https://axetechnologies.ca">AXE Technologies</a> &mdash; 2026</p>
+    </div>
 </footer>
 
 <script>
@@ -381,16 +554,14 @@ const devices=[
 ];
 let sweepAngle=0,hoveredDevice=null,mouseX=-1,mouseY=-1;
 function resize(){const w=canvas.parentElement;const s=w.clientWidth;const dpr=window.devicePixelRatio||1;W=s;H=s;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);cx=W/2;cy=H/2;maxR=Math.min(W,H)*0.42;}
-function drawGrid(){for(let i=1;i<=4;i++){const r=maxR*(i/4);ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba('+GR+',0.08)';ctx.lineWidth=1;ctx.stroke();}ctx.font='9px "IBM Plex Mono"';ctx.fillStyle='rgba('+GR+',0.25)';ctx.textAlign='left';['5m','10m','15m','20m'].forEach(function(l,i){ctx.fillText(l,cx+maxR*((i+1)/4)+4,cy-3);});ctx.beginPath();ctx.moveTo(cx-maxR,cy);ctx.lineTo(cx+maxR,cy);ctx.moveTo(cx,cy-maxR);ctx.lineTo(cx,cy+maxR);ctx.strokeStyle='rgba('+GR+',0.06)';ctx.lineWidth=1;ctx.stroke();ctx.font='bold 11px "Space Grotesk"';ctx.fillStyle='rgba('+GR+',0.4)';ctx.textAlign='center';ctx.fillText('N',cx,cy-maxR-8);ctx.fillText('S',cx,cy+maxR+16);ctx.fillText('E',cx+maxR+12,cy+4);ctx.fillText('W',cx-maxR-12,cy+4);}
+function drawGrid(){for(let i=1;i<=4;i++){const r=maxR*(i/4);ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba('+GR+',0.08)';ctx.lineWidth=1;ctx.stroke();}ctx.font='9px "IBM Plex Mono"';ctx.fillStyle='rgba('+GR+',0.25)';ctx.textAlign='left';['2m','5m','10m','20m'].forEach(function(l,i){ctx.fillText(l,cx+maxR*((i+1)/4)+4,cy-3);});ctx.beginPath();ctx.moveTo(cx-maxR,cy);ctx.lineTo(cx+maxR,cy);ctx.moveTo(cx,cy-maxR);ctx.lineTo(cx,cy+maxR);ctx.strokeStyle='rgba('+GR+',0.06)';ctx.lineWidth=1;ctx.stroke();ctx.font='bold 11px "Space Grotesk"';ctx.fillStyle='rgba('+GR+',0.4)';ctx.textAlign='center';ctx.fillText('N',cx,cy-maxR-8);ctx.fillText('S',cx,cy+maxR+16);ctx.fillText('E',cx+maxR+12,cy+4);ctx.fillText('W',cx-maxR-12,cy+4);}
 function drawSweep(){sweepAngle+=0.012;if(sweepAngle>Math.PI*2)sweepAngle-=Math.PI*2;ctx.save();ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,maxR,sweepAngle-0.5,sweepAngle,false);ctx.closePath();const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR);grd.addColorStop(0,'rgba('+GR+',0.15)');grd.addColorStop(0.7,'rgba('+GR+',0.06)');grd.addColorStop(1,'rgba('+GR+',0)');ctx.fillStyle=grd;ctx.fill();ctx.restore();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(sweepAngle)*maxR,cy+Math.sin(sweepAngle)*maxR);ctx.strokeStyle='rgba('+GR+',0.5)';ctx.lineWidth=1.5;ctx.stroke();}
 function drawCenter(){const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,30);grad.addColorStop(0,'rgba('+GR+',0.2)');grad.addColorStop(1,'transparent');ctx.fillStyle=grad;ctx.fillRect(cx-30,cy-30,60,60);const pulseR=12+Math.sin(t*0.04)*3;ctx.beginPath();ctx.arc(cx,cy,pulseR,0,Math.PI*2);ctx.strokeStyle='rgba('+GR+',0.3)';ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.fillStyle=GOLD;ctx.fill();ctx.fillStyle='#000';ctx.font='bold 8px "Space Grotesk"';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('T',cx,cy);}
 function drawDevices(){hoveredDevice=null;for(let i=0;i<devices.length;i++){const d=devices[i];d.angle+=d.speed+Math.sin(t*0.01+i)*0.0002;const dx=cx+Math.cos(d.angle)*(d.dist*maxR),dy=cy+Math.sin(d.angle)*(d.dist*maxR);const angleDiff=Math.abs(((sweepAngle-d.angle)%(Math.PI*2)+Math.PI*2)%(Math.PI*2));const sweepGlow=angleDiff<0.3?(0.3-angleDiff)/0.3:0;const strength=Math.max(0.2,1-(Math.abs(d.rssi)-30)/60);const distToMouse=Math.hypot(mouseX-dx,mouseY-dy);const isHovered=distToMouse<20;if(isHovered)hoveredDevice={...d,x:dx,y:dy};if(sweepGlow>0||isHovered){const glowR=isHovered?24:16;const grd=ctx.createRadialGradient(dx,dy,0,dx,dy,glowR);grd.addColorStop(0,'rgba('+GR+','+(isHovered?0.3:sweepGlow*0.2)+')');grd.addColorStop(1,'transparent');ctx.fillStyle=grd;ctx.fillRect(dx-glowR,dy-glowR,glowR*2,glowR*2);}const dotR=isHovered?6:4;ctx.beginPath();ctx.arc(dx,dy,dotR,0,Math.PI*2);const alpha=Math.max(0.25,strength+sweepGlow*0.5);ctx.fillStyle='rgba('+GR+','+alpha+')';ctx.fill();ctx.beginPath();ctx.arc(dx,dy,dotR+3,0,Math.PI*2);ctx.strokeStyle='rgba('+GR+','+(alpha*0.4)+')';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='rgba(255,255,255,'+(isHovered?0.9:0.45)+')';ctx.font=(isHovered?'500 11px':'400 9px')+' "IBM Plex Mono"';ctx.textAlign='center';ctx.fillText(d.name,dx,dy+(isHovered?20:16));if(isHovered){ctx.fillStyle='rgba('+GR+',0.7)';ctx.font='400 9px "IBM Plex Mono"';ctx.fillText(d.band+' · '+d.rssi+' dBm',dx,dy+32);}}}
 function draw(){t++;ctx.clearRect(0,0,W,H);drawGrid();drawSweep();drawDevices();drawCenter();requestAnimationFrame(draw);}
 canvas.addEventListener('mousemove',function(e){const r=canvas.getBoundingClientRect();mouseX=e.clientX-r.left;mouseY=e.clientY-r.top;canvas.style.cursor=hoveredDevice?'pointer':'default';});
 canvas.addEventListener('mouseleave',function(){mouseX=-1;mouseY=-1;});
-function animateStats(){const targets={down:142,up:28,devices:6,latency:4};const duration=2000;const start=performance.now();function tick(now){const p=Math.min((now-start)/duration,1);const ease=1-Math.pow(1-p,3);document.getElementById('statDown').textContent=Math.round(targets.down*ease);document.getElementById('statUp').textContent=Math.round(targets.up*ease);document.getElementById('statDevices').textContent=Math.round(targets.devices*ease);document.getElementById('statLatency').textContent=Math.round(targets.latency*ease);if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);}
 window.addEventListener('resize',resize);resize();draw();
-const rObs=new IntersectionObserver(function(e){if(e[0].isIntersecting)animateStats();},{threshold:0.3});rObs.observe(canvas);
 })();
 
 // NAV MINI GLOBE
