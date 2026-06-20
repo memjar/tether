@@ -221,17 +221,28 @@
 </head>
 <body>
 
+<div id="pageTransition" style="position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s ease;">
+    <div style="position:relative;width:120px;height:120px;">
+        <div style="position:absolute;top:50%;left:50%;width:16px;height:16px;background:#D4AF37;border-radius:50%;transform:translate(-50%,-50%);animation:bPulse 1.8s ease-in-out infinite;"></div>
+        <div style="position:absolute;top:50%;left:50%;width:40px;height:40px;border-radius:50%;border:1.5px solid #D4AF37;transform:translate(-50%,-50%);opacity:0;animation:bRing 1.8s ease-out infinite 0.2s;"></div>
+        <div style="position:absolute;top:50%;left:50%;width:70px;height:70px;border-radius:50%;border:1.5px solid #D4AF37;transform:translate(-50%,-50%);opacity:0;animation:bRing 1.8s ease-out infinite 0.5s;"></div>
+        <div style="position:absolute;top:50%;left:50%;width:100px;height:100px;border-radius:50%;border:1.5px solid #D4AF37;transform:translate(-50%,-50%);opacity:0;animation:bRing 1.8s ease-out infinite 0.8s;"></div>
+    </div>
+    <div style="margin-top:32px;font-family:var(--mono);font-size:11px;color:#D4AF37;letter-spacing:0.15em;text-transform:uppercase;opacity:0;animation:bLabel 0.5s ease forwards 0.3s;">Opening beacon...</div>
+</div>
+<style>
+@keyframes bPulse{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.3);opacity:0.8;}}
+@keyframes bRing{0%{transform:translate(-50%,-50%) scale(0.6);opacity:0.6;}100%{transform:translate(-50%,-50%) scale(1.1);opacity:0;}}
+@keyframes bLabel{to{opacity:1;}}
+</style>
+
 <nav id="nav">
     <a href="#" class="logo">
         <canvas class="logo-globe" id="logoGlobe" width="64" height="64"></canvas>
         Tether
     </a>
     <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#radar">Radar</a>
-        <a href="#devices">Devices</a>
-        <a href="#usecases">Use Cases</a>
-        <a href="#download" class="nav-cta">Download</a>
+        <a href="javascript:void(0)" class="nav-cta" onclick="navigateWithTransition('download.html')">Download</a>
     </div>
 </nav>
 
@@ -242,7 +253,7 @@
         <div class="hero-eyebrow fade fade-d1">Now available on TestFlight</div>
         <h1 class="fade fade-d2">Your internet,<br><span>untethered.</span></h1>
         <p class="fade fade-d3">Turn any connection into a shared WiFi beacon. AI-powered failover, device management, and proximity radar from your menubar.</p>
-        <a href="#download" class="hero-cta fade fade-d4">Download Now</a>
+        <a href="javascript:void(0)" class="hero-cta fade fade-d4" onclick="navigateWithTransition('download.html')">Download Now</a>
     </div>
     <div class="scroll-hint"><span>Scroll</span><div class="scroll-arrow"></div></div>
 </section>
@@ -310,7 +321,7 @@
 <!-- 6. SPLIT PANEL — AI Failover (reversed) -->
 <div class="panel panel-reverse">
     <div class="panel-visual">
-        <div class="panel-icon"><svg viewBox="0 0 80 80" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"><circle cx="40" cy="40" r="10"/><circle cx="16" cy="24" r="5"/><circle cx="64" cy="24" r="5"/><circle cx="16" cy="56" r="5"/><circle cx="64" cy="56" r="5"/><path d="M32 34l-11-6M48 34l11-6M32 46l-11 6M48 46l11 6"/></svg></div>
+        <div style="width:280px;height:280px;"><canvas id="intelCanvas" width="560" height="560" style="width:280px;height:280px;"></canvas></div>
     </div>
     <div class="panel-text">
         <div class="panel-label">Intelligence</div>
@@ -415,56 +426,23 @@
     <h2 class="fade">Three steps. Zero config.</h2>
     <div class="steps fade">
         <div class="step">
-            <div class="step-num">01</div>
+            <canvas class="step-anim" id="stepAnim1" width="160" height="160" style="width:80px;height:80px;margin-bottom:20px;"></canvas>
             <h3>Open Beacon</h3>
             <p>Click the menubar icon, select your source connection, and open your beacon. Your Mac becomes a WiFi access point.</p>
         </div>
         <div class="step">
-            <div class="step-num">02</div>
+            <canvas class="step-anim" id="stepAnim2" width="160" height="160" style="width:80px;height:80px;margin-bottom:20px;"></canvas>
             <h3>Connect Devices</h3>
             <p>Other devices join your beacon like any WiFi network. The companion app shows them on the radar in real time.</p>
         </div>
         <div class="step">
-            <div class="step-num">03</div>
+            <canvas class="step-anim" id="stepAnim3" width="160" height="160" style="width:80px;height:80px;margin-bottom:20px;"></canvas>
             <h3>Stay in Control</h3>
             <p>Monitor bandwidth, pause devices, get alerts on new connections. AI handles failover if your source drops.</p>
         </div>
     </div>
 </section>
 
-<!-- 10. SPECS -->
-<section class="specs-section">
-    <div class="f-eyebrow fade">Technical</div>
-    <h2 class="fade">Built different.</h2>
-    <div class="spec-grid fade">
-        <div class="spec-item"><div class="spec-value">&lt;10MB</div><div class="spec-label">App Size</div></div>
-        <div class="spec-item"><div class="spec-value">5s</div><div class="spec-label">Refresh</div></div>
-        <div class="spec-item"><div class="spec-value">PF</div><div class="spec-label">Firewall</div></div>
-        <div class="spec-item"><div class="spec-value">0</div><div class="spec-label">Dependencies</div></div>
-    </div>
-</section>
-
-<!-- 11. DOWNLOAD CTA -->
-<section class="section cta-section" id="download">
-    <h2 class="fade">Get Tether.</h2>
-    <p class="fade">Available now on TestFlight. macOS coming soon.</p>
-    <div class="download-buttons fade">
-        <a href="#" id="testflight-btn" class="dl-btn dl-btn-primary" onclick="return false;">
-            <svg viewBox="0 0 24 24" fill="#000" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-            <div class="dl-btn-text"><div class="dl-btn-sub">Download on</div><div class="dl-btn-main">TestFlight</div></div>
-        </a>
-        <a href="https://github.com/memjar/tether/releases" class="dl-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 17h18M8 21h8M12 17v4"/></svg>
-            <div class="dl-btn-text"><div class="dl-btn-sub">Download for</div><div class="dl-btn-main">macOS</div></div>
-        </a>
-    </div>
-    <div class="dl-divider fade">or get notified</div>
-    <div class="email-form fade">
-        <input type="email" placeholder="you@email.com" id="email-input">
-        <button onclick="submitEmail()">Notify Me</button>
-    </div>
-    <p id="form-msg" style="margin-top:20px;font-size:13px;display:none;"></p>
-</section>
 
 <!-- 12. FOOTER -->
 <footer class="footer">
@@ -479,7 +457,7 @@
             <a href="#features">Features</a>
             <a href="#radar">Radar</a>
             <a href="#devices">Devices</a>
-            <a href="#download">Download</a>
+            <a href="download.html">Download</a>
         </div>
         <div class="footer-col">
             <h4>Resources</h4>
@@ -499,6 +477,13 @@
 </footer>
 
 <script>
+// PAGE TRANSITION
+function navigateWithTransition(url){
+    var o=document.getElementById('pageTransition');
+    o.style.opacity='1';o.style.pointerEvents='all';
+    setTimeout(function(){window.location.href=url;},1500);
+}
+
 // NAV SCROLL
 window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60);});
 
@@ -610,6 +595,77 @@ a+=0.3;requestAnimationFrame(draw);
 }
 draw();
 })();
+
+// INTELLIGENCE ANIMATION — WiFi -> Operator spread
+(function(){
+var C=document.getElementById('intelCanvas');if(!C)return;
+var ctx=C.getContext('2d');var DPR=window.devicePixelRatio||1;var S=280;
+C.width=S*DPR;C.height=S*DPR;ctx.scale(DPR,DPR);
+var cx=S/2,cy=S/2,t=0,CYCLE=360;
+var ops=[{a:-Math.PI/3,d:90},{a:Math.PI/6,d:95},{a:Math.PI*2/3,d:85},{a:-Math.PI*5/6,d:88}];
+function ease(x){return x<0.5?2*x*x:1-Math.pow(-2*x+2,2)/2;}
+function draw(){
+t=(t+1)%CYCLE;var ph=t/CYCLE;ctx.clearRect(0,0,S,S);
+var cA=Math.min(1,ph/0.12),cR=12*ease(Math.min(1,ph/0.12));
+var g=ctx.createRadialGradient(cx,cy,0,cx,cy,cR+20);g.addColorStop(0,'rgba(212,175,55,'+(cA*0.15)+')');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,cR+20,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.arc(cx,cy,cR,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+cA+')';ctx.fill();ctx.strokeStyle='rgba(212,175,55,'+(cA*0.5)+')';ctx.lineWidth=1.5;ctx.stroke();
+if(ph>0.1){var ta=Math.min(1,(ph-0.1)/0.12);ctx.fillStyle='rgba(212,175,55,'+ta+')';ctx.font='600 13px "IBM Plex Mono"';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('WiFi',cx,cy+cR+10);}
+if(ph>0.15&&ph<0.7){var pp=((ph-0.15)/0.55);for(var p=0;p<3;p++){var rp=(pp-p*0.15);if(rp>0&&rp<1){ctx.beginPath();ctx.arc(cx,cy,cR+rp*100,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,'+(Math.max(0,1-rp)*0.3)+')';ctx.lineWidth=1;ctx.stroke();}}}
+if(ph>0.22){var np=Math.min(1,(ph-0.22)/0.3);for(var i=0;i<ops.length;i++){var o=ops[i],dl=i*0.15,n=Math.max(0,Math.min(1,(np-dl)/0.6));if(n<=0)continue;var e=ease(n);var ox=cx+Math.cos(o.a)*o.d*e,oy=cy+Math.sin(o.a)*o.d*e;
+ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ox,oy);ctx.strokeStyle='rgba(212,175,55,'+(e*0.4)+')';ctx.lineWidth=1;ctx.stroke();
+if(n>0.3&&n<1){var pt=(n-0.3)/0.7;ctx.beginPath();ctx.arc(cx+(ox-cx)*pt,cy+(oy-cy)*pt,2.5,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,0.8)';ctx.fill();}
+var nr=8*e;var ng=ctx.createRadialGradient(ox,oy,0,ox,oy,nr+12);ng.addColorStop(0,'rgba(212,175,55,'+(e*0.1)+')');ng.addColorStop(1,'transparent');ctx.fillStyle=ng;ctx.beginPath();ctx.arc(ox,oy,nr+12,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.arc(ox,oy,nr,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+(e*0.8)+')';ctx.fill();ctx.strokeStyle='rgba(212,175,55,'+(e*0.4)+')';ctx.lineWidth=1;ctx.stroke();
+if(e>0.5){ctx.fillStyle='rgba(255,255,255,'+((e-0.5)*2*0.7)+')';ctx.font='500 10px "IBM Plex Mono"';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('Operator',ox,oy+nr+6);}}}
+if(ph>0.82){ctx.fillStyle='rgba(0,0,0,'+((ph-0.82)/0.18)+')';ctx.fillRect(0,0,S,S);}
+requestAnimationFrame(draw);}
+draw();
+})();
+
+// STEP 1: Beacon activating
+(function(){
+var C=document.getElementById('stepAnim1');if(!C)return;
+var ctx=C.getContext('2d');var DPR=window.devicePixelRatio||1;var S=80;
+C.width=S*DPR;C.height=S*DPR;ctx.scale(DPR,DPR);var cx=S/2,cy=S/2,t=0;
+function draw(){t+=0.02;ctx.clearRect(0,0,S,S);var ph=(t%3)/3;
+var cA=ph<0.2?ph/0.2:1,cR=6*Math.min(1,ph/0.15);
+ctx.beginPath();ctx.arc(cx,cy,cR,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+cA+')';ctx.fill();
+if(ph>0.15){for(var i=0;i<3;i++){var rp=(ph-0.15-i*0.12);if(rp>0&&rp<0.6){ctx.beginPath();ctx.arc(cx,cy,cR+rp*50,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,'+(Math.max(0,(0.6-rp)/0.6)*0.5)+')';ctx.lineWidth=1;ctx.stroke();}}}
+if(ph>0.3){var wa=Math.min(1,(ph-0.3)/0.2);for(var j=0;j<3;j++){ctx.beginPath();ctx.arc(cx,cy-4,12+j*7,-Math.PI*0.75,-Math.PI*0.25);ctx.strokeStyle='rgba(212,175,55,'+(wa*(1-j*0.25))+')';ctx.lineWidth=1.5;ctx.stroke();}}
+requestAnimationFrame(draw);}draw();})();
+
+// STEP 2: Devices connecting
+(function(){
+var C=document.getElementById('stepAnim2');if(!C)return;
+var ctx=C.getContext('2d');var DPR=window.devicePixelRatio||1;var S=80;
+C.width=S*DPR;C.height=S*DPR;ctx.scale(DPR,DPR);var cx=S/2,cy=S/2,t=0;
+var nd=[{a:-0.8,d:28},{a:0.5,d:30},{a:2.2,d:26},{a:3.6,d:32}];
+function draw(){t+=0.015;ctx.clearRect(0,0,S,S);var ph=(t%3.5)/3.5;
+ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,0.9)';ctx.fill();
+for(var i=0;i<nd.length;i++){var np=Math.max(0,Math.min(1,(ph-0.1-i*0.15)/0.25));if(np<=0)continue;
+var ep=np<0.5?2*np*np:1-Math.pow(-2*np+2,2)/2;var nx=cx+Math.cos(nd[i].a)*nd[i].d*ep,ny=cy+Math.sin(nd[i].a)*nd[i].d*ep;
+ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(nx,ny);ctx.strokeStyle='rgba(212,175,55,'+(ep*0.3)+')';ctx.lineWidth=0.8;ctx.stroke();
+ctx.beginPath();ctx.arc(nx,ny,3.5*ep,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,'+(ep*0.8)+')';ctx.fill();
+if(np>0.8){var pp=(np-0.8)/0.2;ctx.beginPath();ctx.arc(nx,ny,3.5+pp*8,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,'+((1-pp)*0.3)+')';ctx.lineWidth=0.8;ctx.stroke();}}
+if(ph>0.85){ctx.fillStyle='rgba(0,0,0,'+((ph-0.85)/0.15)+')';ctx.fillRect(0,0,S,S);}
+requestAnimationFrame(draw);}draw();})();
+
+// STEP 3: Shield / control
+(function(){
+var C=document.getElementById('stepAnim3');if(!C)return;
+var ctx=C.getContext('2d');var DPR=window.devicePixelRatio||1;var S=80;
+C.width=S*DPR;C.height=S*DPR;ctx.scale(DPR,DPR);var cx=S/2,cy=S/2,t=0;
+function draw(){t+=0.02;ctx.clearRect(0,0,S,S);var ph=(t%4)/4;
+var sA=Math.min(1,ph/0.15);
+ctx.save();ctx.translate(cx,cy-2);ctx.scale(0.55,0.55);
+ctx.beginPath();ctx.moveTo(0,-28);ctx.bezierCurveTo(16,-28,24,-20,24,-8);ctx.bezierCurveTo(24,12,14,24,0,32);ctx.bezierCurveTo(-14,24,-24,12,-24,-8);ctx.bezierCurveTo(-24,-20,-16,-28,0,-28);ctx.closePath();
+ctx.strokeStyle='rgba(212,175,55,'+(sA*0.6)+')';ctx.lineWidth=2.5;ctx.stroke();ctx.fillStyle='rgba(212,175,55,'+(sA*0.04)+')';ctx.fill();ctx.restore();
+if(ph>0.2&&ph<0.8){var cp=Math.min(1,(ph-0.2)/0.2);ctx.save();ctx.translate(cx,cy);ctx.scale(0.5,0.5);ctx.beginPath();ctx.moveTo(-12,2);
+if(cp<0.5){ctx.lineTo(-12+cp*16,2+cp*16);}else{ctx.lineTo(-4,10);ctx.lineTo(-4+(cp-0.5)*40,10-(cp-0.5)*36);}
+ctx.strokeStyle='rgba(212,175,55,'+sA+')';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.restore();}
+if(ph>0.35){var sr=20+(ph-0.35)*30,sa=Math.max(0,1-(ph-0.35)*1.2)*0.2;ctx.beginPath();ctx.arc(cx,cy,sr,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,'+sa+')';ctx.lineWidth=0.8;ctx.stroke();}
+if(ph>0.88){ctx.fillStyle='rgba(0,0,0,'+((ph-0.88)/0.12)+')';ctx.fillRect(0,0,S,S);}
+requestAnimationFrame(draw);}draw();})();
 </script>
 </body>
 </html>
