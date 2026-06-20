@@ -4,11 +4,13 @@ import SwiftUI
 struct CarmackApp: App {
     @StateObject private var beacon = BeaconDiscovery()
     @StateObject private var radar = BLERadar()
+    @StateObject private var tether = BLETether()
 
     var body: some Scene {
         WindowGroup {
-            RootView(beacon: beacon, radar: radar)
+            RootView(beacon: beacon, radar: radar, tether: tether)
                 .preferredColorScheme(.dark)
+                .onAppear { tether.startScanning() }
         }
     }
 }
@@ -16,6 +18,7 @@ struct CarmackApp: App {
 struct RootView: View {
     @ObservedObject var beacon: BeaconDiscovery
     @ObservedObject var radar: BLERadar
+    @ObservedObject var tether: BLETether
     @State private var tab: Tab = .status
 
     enum Tab: String, CaseIterable {

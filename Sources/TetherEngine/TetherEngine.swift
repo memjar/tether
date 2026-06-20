@@ -6,6 +6,7 @@ public final class TetherEngine: ObservableObject {
     public let sharing: InternetSharingController
     public let radio: RadioController
     public let clients: ClientManager
+    public let beacon: BLEBeacon
 
     @Published public var networkStatus: String = "Initializing..."
     @Published public var primaryInterface: String = "—"
@@ -21,12 +22,14 @@ public final class TetherEngine: ObservableObject {
     @Published public var sharingActive: Bool = false
     @Published public var connectedDevices: [ManagedClient] = []
     @Published public var detectedSources: [DetectedInterface] = []
+    @Published public var bleConnectedDevices: Int = 0
 
     public init() {
         self.monitor = NetworkMonitor()
         self.sharing = InternetSharingController()
         self.radio = RadioController()
         self.clients = ClientManager()
+        self.beacon = BLEBeacon()
     }
 
     public func start() {
@@ -37,6 +40,27 @@ public final class TetherEngine: ObservableObject {
                 self.primaryInterface = snapshot.primaryInterface?.name ?? "—"
                 self.interfaceType = snapshot.primaryInterface?.typeLabel ?? "—"
                 self.isExpensive = snapshot.isExpensive
+            }
+        }
+
+        beacon.start()
+        beacon.onCommand = { [weak self] cmd in
+            guard let action = cmd["action"] as? String else { return }
+            switch action {
+            case "start":
+                let ssid = cmd["ssid"] as? String ?? "Tether"
+                let pass = cmd["password"] as? String ?? ""
+                let src = cmd["source"] as? String ?? "en0"
+                self?.startSharing(ssid: ssid, password: pass, source: src)
+            case "stop":
+                self?.stopSharing()
+            case "pause":
+                if let mac = cmd["device"] as? String { self?.pauseDevice(mac: mac) }
+            case "resume":
+                if let mac = cmd["device"] as? String { self?.resumeDevice(mac: mac) }
+            case "kick":
+                if let mac = cmd["device"] as? String { self?.kickDevice(mac: mac) }
+            default: break
             }
         }
 
@@ -122,10 +146,41 @@ public final class TetherEngine: ObservableObject {
         let timer = DispatchSource.makeTimerSource(queue: .global())
         timer.schedule(deadline: .now() + 5, repeating: 5)
         timer.setEventHandler { [weak self] in
-            self?.refreshRadio()
-            self?.refreshClients()
+            guard let self = self else { return }
+            self.refreshRadio()
+            self.refreshClients()
+            self.pushBLEStatus()
         }
         timer.resume()
         refreshTimer = timer
+    }
+
+    private func pushBLEStatus() {
+        let status: [String: Any] = [
+            "sharing": sharing.state.rawValue,
+            "network": networkStatus,
+            "clients": sharing.connectedClients,
+            "ssid": sharing.config.wifiConfig.ssid,
+            "source": sharing.config.sourceInterface,
+            "expensive": isExpensive
+        ]
+        beacon.pushStatus(status)
+
+        if let info = radio.currentRadioInfo() {
+            let radioData: [String: Any] = [
+                "rssi": info.rssi,
+                "noise": info.noise,
+                "channel": info.channel,
+                "band": info.channelBand,
+                "phy": info.phyMode,
+                "txRate": info.txRate,
+                "ssid": info.ssid ?? ""
+            ]
+            beacon.pushRadio(radioData)
+        }
+
+        DispatchQueue.main.async {
+            self.bleConnectedDevices = self.beacon.connectedCentrals
+        }
     }
 }
