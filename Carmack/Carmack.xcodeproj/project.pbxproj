@@ -11,6 +11,7 @@
 		A10002 /* TetherDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
 		A10003 /* BeaconDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
 		A10004 /* BLERadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
+		A10099 /* BLETether.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10099; };
 		A10005 /* GhostHotspot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
 		A10006 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
 		A10007 /* DeviceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
@@ -24,6 +25,7 @@
 		B10002 /* TetherDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherDevice.swift; sourceTree = "<group>"; };
 		B10003 /* BeaconDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconDiscovery.swift; sourceTree = "<group>"; };
 		B10004 /* BLERadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLERadar.swift; sourceTree = "<group>"; };
+		B10099 /* BLETether.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLETether.swift; sourceTree = "<group>"; };
 		B10005 /* GhostHotspot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GhostHotspot.swift; sourceTree = "<group>"; };
 		B10006 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		B10007 /* DeviceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceListView.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 			children = (
 				B10003 /* BeaconDiscovery.swift */,
 				B10004 /* BLERadar.swift */,
+				B10099 /* BLETether.swift */,
 				B10005 /* GhostHotspot.swift */,
 			);
 			path = Services;
@@ -146,6 +149,7 @@
 				A10002 /* TetherDevice.swift in Sources */,
 				A10003 /* BeaconDiscovery.swift in Sources */,
 				A10004 /* BLERadar.swift in Sources */,
+				A10099 /* BLETether.swift in Sources */,
 				A10005 /* GhostHotspot.swift in Sources */,
 				A10006 /* StatusView.swift in Sources */,
 				A10007 /* DeviceListView.swift in Sources */,
