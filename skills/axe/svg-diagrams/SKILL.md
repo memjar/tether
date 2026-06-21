@@ -1,19 +1,19 @@
 ---
-name: axe-svg-diagrams
+name: visualizer — axe-svg-diagrams
 version: 1.1.0
 owner: AXE Technologies
 model_compatibility: any — Qwen, Claude, GPT, Gemini, Llama, or custom
 description: >
-  Use this skill whenever generating a visual diagram, architecture map, agent
-  topology, model pipeline, data flow, or any structured visual for the AXE/IMI
-  stack. Triggers: "diagram", "visualize", "show me", "map out", "draw the flow",
-  "architecture of", or any request where a structured visual communicates more
-  than prose. Outputs a raw <svg> string. The front end renders it via
-  SVGWidget — no model-specific renderer required. Do NOT use for numeric
-  charts or graphs — use a charting library for that.
+  VISUALIZER. Use this skill whenever generating a visual diagram, architecture
+  map, agent topology, model pipeline, data flow, or any structured visual for
+  the AXE/IMI stack. Triggers: "diagram", "visualize", "show me", "map out",
+  "draw the flow", "architecture of", or any request where a structured visual
+  communicates more than prose. Outputs a raw <svg> string. The front end
+  renders it via SVGWidget — no model-specific renderer required. Do NOT use
+  for numeric charts or graphs — use a charting library for that.
 ---
 
-# AXE SVG Diagrams Skill
+# Visualizer — AXE SVG Diagrams Skill
 
 You are generating a branded SVG diagram for the AXE/IMI platform. The output
 is a raw `<svg>` element injected directly into the front end. This skill is
