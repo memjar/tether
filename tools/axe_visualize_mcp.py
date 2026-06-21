@@ -1,206 +1,299 @@
-#!/usr/bin/env python3
-"""AXE SVG Diagram MCP Tool — generates on-brand diagrams from structured JSON specs."""
+"""
+axe_visualize MCP Server
+AXE Technologies — AI-agnostic SVG diagram generation
 
-import json, math, sys
+Model-agnostic: works with Qwen, Claude, GPT, Gemini, Llama, or any
+model that can call MCP tools. No provider-specific dependencies.
 
-try:
-    from mcp.server.fastmcp import FastMCP
-    HAS_MCP = True
-except ImportError:
-    HAS_MCP = False
+Deploy: gateway.axe.onl or standalone on JL1:8204
+"""
 
-AXE_TOKENS = {
-    "gold": "#D4AF37", "gold_dark": "#B8962E", "gold_light": "#E8C547",
-    "bg": "#0A0A0C", "surface": "#1A1A1F", "surface_raised": "#222228",
-    "border": "#2A2A30", "border_active": "#3A3A42",
-    "text": "#E0E0E0", "text_sec": "#888888", "text_muted": "#555555",
-    "ok": "#4CAF50", "err": "#F44336", "warn": "#FF9800", "info": "#2196F3",
-    "tier1": "#D4AF37", "tier2": "#A0A0A0", "tier3": "#8B6914", "inactive": "#333338",
-    "font": "'Space Grotesk', sans-serif",
-    "mono": "'IBM Plex Mono', monospace",
+from fastmcp import FastMCP
+from pydantic import BaseModel, Field
+from typing import Literal, Optional
+import hashlib
+import time
+
+mcp = FastMCP(
+    name="axe-visualize",
+    instructions="""
+AXE Technologies SVG diagram generation tool.
+Use axe_visualize to produce branded, interactive SVG diagrams for the AXE/IMI
+stack. Pass a DiagramSpec with nodes, edges, and type. Receive a raw SVG string
+ready for SVGWidget. Use axe_visualize_quick for fast calls with parallel lists.
+This tool is model-agnostic — call it from Qwen, Claude, or any other model.
+""",
+)
+
+# ── Types ─────────────────────────────────────────────────────────────────────
+
+AXEColor = Literal[
+    "c-slate",    # infra, structural
+    "c-teal",     # data pipeline, training
+    "c-purple",   # model layer (any model)
+    "c-coral",    # orchestration, routing
+    "c-amber",    # scheduled agents, Tier 5
+    "c-blue",     # product surface
+    "c-green",    # eval pass, STABLE/IMPROVED
+    "c-red",      # drift, failure, alerts
+]
+
+DiagramType = Literal[
+    "pipeline",   # linear flow
+    "topology",   # orchestrator + specialist fan
+    "spectrum",   # agency tier stack
+    "eval_loop",  # rubric scoring cycle
+    "custom",     # free-form
+]
+
+class Node(BaseModel):
+    id: str
+    label: str = Field(..., description="Primary label, max 25 chars")
+    sublabel: Optional[str] = Field(None, description="Secondary label, max 30 chars")
+    color: AXEColor = "c-slate"
+    action: str = Field(
+        ...,
+        description="Text passed to axe.action() when this node is clicked"
+    )
+
+class Edge(BaseModel):
+    from_id: str
+    to_id: str
+    dashed: bool = False
+
+class DiagramSpec(BaseModel):
+    type: DiagramType
+    title: str
+    description: str = Field(..., description="One sentence for SVG <desc>")
+    nodes: list[Node]
+    edges: list[Edge] = []
+    store_artifact: bool = False
+    session_id: Optional[str] = None
+
+# ── Design constants ──────────────────────────────────────────────────────────
+
+ARROW_DEFS = """<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+          markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke"
+          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>"""
+
+NODE_W   = 200
+NODE_H1  = 44
+NODE_H2  = 56
+GAP_Y    = 24
+CANVAS_W = 680
+SAFE_X   = 40
+
+# ── Render helpers ────────────────────────────────────────────────────────────
+
+def node_h(node: Node) -> int:
+    return NODE_H2 if node.sublabel else NODE_H1
+
+def render_node(node: Node, x: int, y: int, w: int = NODE_W) -> str:
+    h   = node_h(node)
+    cx  = x + w // 2
+    ty  = y + NODE_H1 // 2 if not node.sublabel else y + 20
+    out = [
+        f'<g class="node {node.color}" onclick="axe.action(\'{node.action}\')">',
+        f'  <rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" stroke-width="0.5"/>',
+        f'  <text class="th" x="{cx}" y="{ty}" text-anchor="middle" dominant-baseline="central">{node.label}</text>',
+    ]
+    if node.sublabel:
+        out.append(
+            f'  <text class="ts" x="{cx}" y="{y+38}" text-anchor="middle" dominant-baseline="central">{node.sublabel}</text>'
+        )
+    out.append('</g>')
+    return "\n".join(out)
+
+def connector(x1, y1, x2, y2, dashed=False) -> str:
+    dash = ' stroke-dasharray="5 4"' if dashed else ""
+    return (
+        f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
+        f'stroke="var(--b)" stroke-width="1"{dash} marker-end="url(#arrow)"/>'
+    )
+
+# ── Layout strategies ─────────────────────────────────────────────────────────
+
+def layout_pipeline(nodes, edges):
+    els, pos = [], {}
+    y = 60
+    cx_offset = (CANVAS_W - NODE_W) // 2
+    for node in nodes:
+        els.append(render_node(node, cx_offset, y))
+        pos[node.id] = (cx_offset, y, node_h(node))
+        y += node_h(node) + GAP_Y
+    for e in edges:
+        if e.from_id in pos and e.to_id in pos:
+            fx, fy, fh = pos[e.from_id]
+            tx, ty, _  = pos[e.to_id]
+            els.append(connector(fx + NODE_W//2, fy + fh, tx + NODE_W//2, ty, e.dashed))
+    return "\n".join(els), y + 40
+
+def layout_topology(nodes, edges):
+    if not nodes:
+        return "", 200
+    els, pos = [], {}
+    gw = nodes[0]
+    gx = (CANVAS_W - NODE_W) // 2
+    gy = 60
+    els.append(render_node(gw, gx, gy))
+    pos[gw.id] = (gx, gy, node_h(gw))
+
+    specs   = nodes[1:]
+    sw      = 160
+    sg      = 20
+    row_sz  = 3
+    base_y  = gy + node_h(gw) + 60
+
+    for i, node in enumerate(specs):
+        col   = i % row_sz
+        row   = i // row_sz
+        n_row = min(row_sz, len(specs) - row * row_sz)
+        total = n_row * sw + (n_row - 1) * sg
+        sx    = (CANVAS_W - total) // 2 + col * (sw + sg)
+        sy    = base_y + row * (NODE_H2 + GAP_Y)
+        h     = node_h(node)
+        cx    = sx + sw // 2
+        ty    = sy + NODE_H1//2 if not node.sublabel else sy + 20
+        el    = [
+            f'<g class="node {node.color}" onclick="axe.action(\'{node.action}\')">',
+            f'  <rect x="{sx}" y="{sy}" width="{sw}" height="{h}" rx="8" stroke-width="0.5"/>',
+            f'  <text class="th" x="{cx}" y="{ty}" text-anchor="middle" dominant-baseline="central">{node.label}</text>',
+        ]
+        if node.sublabel:
+            el.append(f'  <text class="ts" x="{cx}" y="{sy+38}" text-anchor="middle" dominant-baseline="central">{node.sublabel}</text>')
+        el.append('</g>')
+        els.append("\n".join(el))
+        els.append(connector(gx + NODE_W//2, gy + node_h(gw), cx, sy))
+
+    max_row = (len(specs) - 1) // row_sz if specs else 0
+    final_y = base_y + (max_row + 1) * (NODE_H2 + GAP_Y) + 40
+    return "\n".join(els), final_y
+
+def layout_spectrum(nodes, edges):
+    els = []
+    y   = 60
+    w   = 580
+    x   = SAFE_X
+    for node in nodes:
+        h  = node_h(node)
+        cx = x + w // 2
+        ty = y + NODE_H1//2 if not node.sublabel else y + 20
+        el = [
+            f'<g class="node {node.color}" onclick="axe.action(\'{node.action}\')">',
+            f'  <rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" stroke-width="0.5"/>',
+            f'  <text class="th" x="{cx}" y="{ty}" text-anchor="middle" dominant-baseline="central">{node.label}</text>',
+        ]
+        if node.sublabel:
+            el.append(f'  <text class="ts" x="{cx}" y="{y+38}" text-anchor="middle" dominant-baseline="central">{node.sublabel}</text>')
+        el.append('</g>')
+        els.append("\n".join(el))
+        els.append(connector(cx, y + h, cx, y + h + GAP_Y - 4))
+        y += h + GAP_Y
+    return "\n".join(els), y + 20
+
+def layout_custom(nodes, edges):
+    return layout_pipeline(nodes, edges)
+
+# ── SVG assembly ──────────────────────────────────────────────────────────────
+
+LAYOUTS = {
+    "pipeline":  layout_pipeline,
+    "topology":  layout_topology,
+    "spectrum":  layout_spectrum,
+    "eval_loop": layout_pipeline,
+    "custom":    layout_custom,
 }
 
-TIER_COLORS = ["#D4AF37", "#A0A0A0", "#8B6914", "#555555"]
+def assemble_svg(spec: DiagramSpec) -> str:
+    body, h = LAYOUTS[spec.type](spec.nodes, spec.edges)
+    return (
+        f'<svg width="100%" viewBox="0 0 {CANVAS_W} {h}" role="img">\n'
+        f'  <title>{spec.title}</title>\n'
+        f'  <desc>{spec.description}</desc>\n'
+        f'  {ARROW_DEFS}\n'
+        f'  {body}\n'
+        f'</svg>'
+    )
 
-def _defs():
-    return '''<defs>
-  <marker id="arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#D4AF37"/>
-  </marker>
-  <marker id="arrow-muted" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#555555"/>
-  </marker>
-</defs>'''
+# ── Artifact store stub ───────────────────────────────────────────────────────
 
-def _box(x, y, w, h, label, subtitle="", color="#D4AF37"):
-    parts = [f'<g transform="translate({x},{y})">',
-        f'<rect width="{w}" height="{h}" fill="{AXE_TOKENS["surface"]}" stroke="{color}" stroke-width="1.5"/>',
-        f'<rect width="{w}" height="3" fill="{color}"/>',
-        f'<text x="{w//2}" y="{h//2 + (0 if subtitle else 5)}" text-anchor="middle" fill="{AXE_TOKENS["text"]}" font-family="{AXE_TOKENS["font"]}" font-size="13" font-weight="700" letter-spacing="0.5">{label}</text>']
-    if subtitle:
-        parts.append(f'<text x="{w//2}" y="{h//2 + 16}" text-anchor="middle" fill="{AXE_TOKENS["text_sec"]}" font-family="{AXE_TOKENS["mono"]}" font-size="9">{subtitle}</text>')
-    parts.append('</g>')
-    return '\n'.join(parts)
+def store_artifact(svg: str, spec: DiagramSpec) -> str:
+    """
+    Wire to your Databricks SDK:
 
-def _arrow(x1, y1, x2, y2, label="", muted=False):
-    mid = "arrow-muted" if muted else "arrow"
-    parts = [f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{AXE_TOKENS["text_muted"] if muted else AXE_TOKENS["gold"]}" stroke-width="1.5" marker-end="url(#{mid})"/>']
-    if label:
-        mx, my = (x1+x2)//2, (y1+y2)//2 - 8
-        parts.append(f'<text x="{mx}" y="{my}" text-anchor="middle" fill="{AXE_TOKENS["text_sec"]}" font-family="{AXE_TOKENS["mono"]}" font-size="9">{label}</text>')
-    return '\n'.join(parts)
+    from databricks.sdk import WorkspaceClient
+    w    = WorkspaceClient()
+    path = f"/Volumes/axe_catalog/diagrams/{spec.session_id}/{hash}.svg"
+    w.files.upload(path, svg.encode())
+    return path
+    """
+    h = hashlib.sha256(svg.encode()).hexdigest()[:12]
+    return f"axe_diagrams/{spec.session_id or 'nosession'}/{h}"
 
-def _metric(x, y, name, value):
-    return f'''<g transform="translate({x},{y})">
-  <rect width="100" height="56" fill="{AXE_TOKENS["surface"]}" stroke="{AXE_TOKENS["border"]}" stroke-width="1"/>
-  <text x="50" y="22" text-anchor="middle" fill="{AXE_TOKENS["text_sec"]}" font-family="{AXE_TOKENS["font"]}" font-size="9" letter-spacing="1">{name.upper()}</text>
-  <text x="50" y="44" text-anchor="middle" fill="{AXE_TOKENS["gold"]}" font-family="{AXE_TOKENS["mono"]}" font-size="18" font-weight="700">{value}</text>
-</g>'''
+# ── MCP tools ─────────────────────────────────────────────────────────────────
 
-def _bar(x, y, w, label, value, pct, color="#4CAF50"):
-    fw = int(w * min(pct, 1.0))
-    return f'''<g transform="translate({x},{y})">
-  <rect width="{w}" height="28" fill="{AXE_TOKENS["surface"]}" stroke="{AXE_TOKENS["border"]}" stroke-width="1"/>
-  <rect width="{fw}" height="28" fill="{color}" opacity="0.25"/>
-  <rect width="{fw}" height="3" fill="{color}"/>
-  <text x="8" y="18" fill="{AXE_TOKENS["text"]}" font-family="{AXE_TOKENS["font"]}" font-size="11">{label}</text>
-  <text x="{w-8}" y="18" text-anchor="end" fill="{color}" font-family="{AXE_TOKENS["mono"]}" font-size="11">{value}</text>
-</g>'''
+@mcp.tool()
+def axe_visualize(spec: DiagramSpec) -> dict:
+    """
+    Generate a branded AXE/IMI SVG diagram from a structured spec.
+    Returns the raw SVG string for injection into SVGWidget.
+    Model-agnostic — call from Qwen, Claude, GPT, or any other model.
+    """
+    svg         = assemble_svg(spec)
+    artifact_id = store_artifact(svg, spec) if spec.store_artifact else None
+    return {
+        "svg":          svg,
+        "artifact_id":  artifact_id,
+        "node_count":   len(spec.nodes),
+        "diagram_type": spec.type,
+        "generated_at": int(time.time()),
+    }
 
-def auto_layout(nodes, layout="horizontal"):
-    bw, bh, gap = 160, 60, 40
-    for i, n in enumerate(nodes):
-        if "x" not in n or "y" not in n:
-            if layout == "vertical":
-                n.setdefault("x", 32)
-                n.setdefault("y", 32 + i * (bh + gap))
-            elif layout == "grid":
-                cols = max(1, int(math.sqrt(len(nodes))))
-                n.setdefault("x", 32 + (i % cols) * (bw + gap))
-                n.setdefault("y", 32 + (i // cols) * (bh + gap))
-            else:
-                n.setdefault("x", 32 + i * (bw + gap))
-                n.setdefault("y", 32)
-        n.setdefault("width", bw)
-        n.setdefault("height", bh)
-    return nodes
+@mcp.tool()
+def axe_visualize_quick(
+    nodes:        list[str],
+    colors:       list[str],
+    actions:      list[str],
+    diagram_type: DiagramType = "pipeline",
+    title:        str = "AXE diagram",
+) -> dict:
+    """
+    Fast diagram from parallel lists — no full DiagramSpec needed.
+    Use label|sublabel syntax to include a sublabel (e.g. "Qwen 14B|LoRA specialist").
 
-def render_svg(spec, design_tokens=None):
-    t = design_tokens or AXE_TOKENS
-    nodes = spec.get("nodes", [])
-    edges = spec.get("edges", [])
-    tiers = spec.get("tiers", [])
-    metrics = spec.get("metrics", [])
-    title = spec.get("title", "")
-    layout = spec.get("layout", "horizontal")
-    dtype = spec.get("type", "custom")
+    Args:
+        nodes:        Label strings, optionally "label|sublabel"
+        colors:       AXE color class strings (e.g. "c-teal")
+        actions:      axe.action() text strings, one per node
+        diagram_type: Layout type
+        title:        SVG title string
+    """
+    if not (len(nodes) == len(colors) == len(actions)):
+        return {"error": "nodes, colors, and actions must be the same length"}
 
-    nodes = auto_layout(nodes, layout)
-    node_map = {n.get("id", str(i)): n for i, n in enumerate(nodes)}
+    built = []
+    for i, (label_str, color, action) in enumerate(zip(nodes, colors, actions)):
+        parts = label_str.split("|", 1)
+        built.append(Node(
+            id       = f"n{i}",
+            label    = parts[0].strip(),
+            sublabel = parts[1].strip() if len(parts) > 1 else None,
+            color    = color,
+            action   = action,
+        ))
 
-    parts = []
-    pad = 32
-    max_x = max((n["x"] + n["width"] for n in nodes), default=200) + pad
-    max_y = max((n["y"] + n["height"] for n in nodes), default=100) + pad
-
-    if metrics:
-        max_x = max(max_x, 32 + len(metrics) * 112 + pad)
-        max_y += 80
-
-    if title:
-        max_y += 32
-
-    vw, vh = int(max_x + pad), int(max_y + pad)
-
-    parts.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {vw} {vh}" width="{vw}" height="{vh}">')
-    parts.append(f'<rect width="{vw}" height="{vh}" fill="{t["bg"]}"/>')
-    parts.append(_defs())
-
-    y_off = 0
-    if title:
-        y_off = 32
-        parts.append(f'<text x="{vw//2}" y="28" text-anchor="middle" fill="{t["gold"]}" font-family="{t["font"]}" font-size="18" font-weight="700" letter-spacing="0.5">{title}</text>')
-
-    if tiers:
-        for ti, tier in enumerate(tiers):
-            tc = tier.get("color", TIER_COLORS[ti % len(TIER_COLORS)])
-            tn = tier.get("nodes", [])
-            for nid in tn:
-                if nid in node_map:
-                    node_map[nid]["color"] = tc
-
-    for n in nodes:
-        c = n.get("color", t["gold"])
-        parts.append(_box(n["x"], n["y"] + y_off, n["width"], n["height"],
-                         n.get("label", n.get("id", "")), n.get("subtitle", ""), c))
-
-    for e in edges:
-        src = node_map.get(e["from"])
-        dst = node_map.get(e["to"])
-        if src and dst:
-            x1 = src["x"] + src["width"]
-            y1 = src["y"] + src["height"] // 2 + y_off
-            x2 = dst["x"]
-            y2 = dst["y"] + dst["height"] // 2 + y_off
-            muted = e.get("style") == "dashed"
-            parts.append(_arrow(x1, y1, x2, y2, e.get("label", ""), muted))
-
-    if metrics:
-        my = max(n["y"] + n["height"] for n in nodes) + y_off + 24
-        for mi, m in enumerate(metrics):
-            parts.append(_metric(32 + mi * 112, my, m["name"], m.get("value", "—")))
-
-    parts.append('</svg>')
-    return '\n'.join(parts)
-
-
-if HAS_MCP:
-    mcp = FastMCP("axe-visualize")
-
-    @mcp.tool()
-    def axe_visualize(spec: dict) -> str:
-        """Generate an AXE-branded SVG diagram from a structured spec.
-
-        spec fields: type, title, nodes[], edges[], tiers[], metrics[], layout, theme
-        nodes: {id, label, subtitle?, color?, x?, y?, width?, height?}
-        edges: {from, to, label?, style?: "solid"|"dashed"}
-        tiers: {name, color, nodes[]}
-        metrics: {name, value}
-        layout: "horizontal"|"vertical"|"grid"
-        """
-        return render_svg(spec, AXE_TOKENS)
+    spec = DiagramSpec(
+        type        = diagram_type,
+        title       = title,
+        description = f"Auto-generated {diagram_type} with {len(built)} nodes",
+        nodes       = built,
+    )
+    return axe_visualize(spec)
 
 
 if __name__ == "__main__":
-    if HAS_MCP and len(sys.argv) > 1 and sys.argv[1] == "serve":
-        mcp.run()
-    else:
-        sample = {
-            "type": "tier",
-            "title": "AXE INFRASTRUCTURE",
-            "nodes": [
-                {"id": "gw", "label": "Gateway", "subtitle": "gateway.axe.onl"},
-                {"id": "ollama", "label": "Ollama", "subtitle": "10.118.0.11:11434"},
-                {"id": "db", "label": "Databricks", "subtitle": "vector store"},
-            ],
-            "edges": [
-                {"from": "gw", "to": "ollama", "label": "VPC"},
-                {"from": "ollama", "to": "db", "label": "embed"},
-            ],
-            "tiers": [
-                {"name": "Edge", "color": "#D4AF37", "nodes": ["gw"]},
-                {"name": "Compute", "color": "#A0A0A0", "nodes": ["ollama"]},
-                {"name": "Storage", "color": "#8B6914", "nodes": ["db"]},
-            ],
-            "metrics": [
-                {"name": "Uptime", "value": "99.7%"},
-                {"name": "Latency", "value": "42ms"},
-                {"name": "Models", "value": "3"},
-            ],
-            "layout": "horizontal",
-        }
-        svg = render_svg(sample, AXE_TOKENS)
-        print(svg)
-        with open("/tmp/axe_test_diagram.svg", "w") as f:
-            f.write(svg)
-        print(f"\nSaved to /tmp/axe_test_diagram.svg", file=sys.stderr)
+    mcp.run()
