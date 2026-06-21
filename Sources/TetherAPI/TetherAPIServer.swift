@@ -134,7 +134,7 @@ public final class TetherAPIServer: @unchecked Sendable {
         conn.send(content: response, completion: .contentProcessed({ _ in conn.cancel() }))
     }
 
-    // MARK: - Control Socket (Carmack JSON protocol)
+    // MARK: - Control Socket (Tether JSON protocol)
 
     private func handleControlConnection(_ conn: NWConnection) {
         conn.start(queue: queue)

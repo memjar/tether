@@ -2,10 +2,10 @@
 .build/
 .swiftpm/
 *.xcodeproj
-!Carmack/Carmack.xcodeproj
+!TetherApp/TetherApp.xcodeproj
 xcuserdata/
 DerivedData/
-Carmack/build/
+TetherApp/build/
 *.o
 *.dylib
 Research/

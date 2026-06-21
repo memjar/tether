@@ -1,17 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-PROJECT="Carmack.xcodeproj"
-SCHEME="Carmack"
+PROJECT="Tether.xcodeproj"
+SCHEME="Tether"
 BUNDLE_ID="ca.axetechnologies.tether"
 BUILD_DIR="build"
-ARCHIVE="$BUILD_DIR/Carmack.xcarchive"
+ARCHIVE="$BUILD_DIR/Tether.xcarchive"
 IPA_DIR="$BUILD_DIR/ipa"
 GHOST_IPA_DIR="$BUILD_DIR/ghost"
 
 cd "$(dirname "$0")"
 
-echo "=== Carmack iOS Build ==="
+echo "=== Tether iOS Build ==="
 echo ""
 
 case "${1:-release}" in
@@ -56,7 +56,7 @@ PLIST
 
     echo "[4/4] Uploading to TestFlight..."
     xcrun altool --upload-app \
-      -f "$IPA_DIR/Carmack.ipa" \
+      -f "$IPA_DIR/Tether.ipa" \
       -t ios \
       --apiKey "${API_KEY:-}" \
       --apiIssuer "${API_ISSUER:-}" \
@@ -64,7 +64,7 @@ PLIST
 
     echo ""
     echo "=== Release build complete ==="
-    echo "IPA: $IPA_DIR/Carmack.ipa"
+    echo "IPA: $IPA_DIR/Tether.ipa"
     ;;
 
   ghost)
@@ -84,19 +84,19 @@ PLIST
 
     echo "[3/3] Packaging TrollStore IPA..."
     mkdir -p "$GHOST_IPA_DIR/Payload"
-    APP_PATH=$(find "$BUILD_DIR" -name "Carmack.app" -type d | head -1)
+    APP_PATH=$(find "$BUILD_DIR" -name "Tether.app" -type d | head -1)
     if [ -z "$APP_PATH" ]; then
-      APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Carmack.app" -path "*/Ghost-iphoneos/*" -type d | head -1)
+      APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Tether.app" -path "*/Ghost-iphoneos/*" -type d | head -1)
     fi
     cp -r "$APP_PATH" "$GHOST_IPA_DIR/Payload/"
     cd "$GHOST_IPA_DIR"
-    zip -qr "../Carmack-ghost.tipa" Payload
+    zip -qr "../Tether-ghost.tipa" Payload
     cd ..
     rm -rf ghost
 
     echo ""
     echo "=== Ghost build complete ==="
-    echo "TrollStore IPA: $BUILD_DIR/Carmack-ghost.tipa"
+    echo "TrollStore IPA: $BUILD_DIR/Tether-ghost.tipa"
     echo "Install via TrollStore or AltStore"
     ;;
 

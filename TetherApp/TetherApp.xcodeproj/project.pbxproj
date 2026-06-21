@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10001 /* CarmackApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
+		A10001 /* TetherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
 		A10002 /* TetherDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
 		A10003 /* BeaconDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
 		A10004 /* BLERadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
@@ -20,8 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C10001 /* Carmack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Carmack.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B10001 /* CarmackApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarmackApp.swift; sourceTree = "<group>"; };
+		C10001 /* Tether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tether.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10001 /* TetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherApp.swift; sourceTree = "<group>"; };
 		B10002 /* TetherDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherDevice.swift; sourceTree = "<group>"; };
 		B10003 /* BeaconDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconDiscovery.swift; sourceTree = "<group>"; };
 		B10004 /* BLERadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLERadar.swift; sourceTree = "<group>"; };
@@ -38,21 +38,21 @@
 		D10001 = {
 			isa = PBXGroup;
 			children = (
-				D10002 /* CarmackApp */,
+				D10002 /* TetherApp */,
 				D10006 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		D10002 /* CarmackApp */ = {
+		D10002 /* TetherApp */ = {
 			isa = PBXGroup;
 			children = (
-				B10001 /* CarmackApp.swift */,
+				B10001 /* TetherApp.swift */,
 				B10010 /* Info.plist */,
 				D10003 /* Models */,
 				D10004 /* Services */,
 				D10005 /* Views */,
 			);
-			path = Sources/CarmackApp;
+			path = Sources/TetherApp;
 			sourceTree = "<group>";
 		};
 		D10003 /* Models */ = {
@@ -88,7 +88,7 @@
 		D10006 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C10001 /* Carmack.app */,
+				C10001 /* Tether.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -96,7 +96,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E10001 /* Carmack */ = {
+		E10001 /* Tether */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F10003;
 			buildPhases = (
@@ -107,9 +107,9 @@
 			);
 			dependencies = (
 			);
-			name = Carmack;
-			productName = Carmack;
-			productReference = C10001 /* Carmack.app */;
+			name = Tether;
+			productName = Tether;
+			productReference = C10001 /* Tether.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -135,7 +135,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E10001 /* Carmack */,
+				E10001 /* Tether */,
 			);
 		};
 /* End PBXProject section */
@@ -145,7 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10001 /* CarmackApp.swift in Sources */,
+				A10001 /* TetherApp.swift in Sources */,
 				A10002 /* TetherDevice.swift in Sources */,
 				A10003 /* BeaconDiscovery.swift in Sources */,
 				A10004 /* BLERadar.swift in Sources */,
@@ -223,7 +223,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Sources/CarmackApp/Info.plist;
+				INFOPLIST_FILE = Sources/TetherApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Tether;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -251,7 +251,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Sources/CarmackApp/Info.plist;
+				INFOPLIST_FILE = Sources/TetherApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Tether;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -298,7 +298,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Sources/CarmackApp/Info.plist;
+				INFOPLIST_FILE = Sources/TetherApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Tether;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -322,7 +322,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F10001 /* Build configuration list for PBXProject "Carmack" */ = {
+		F10001 /* Build configuration list for PBXProject "Tether" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F10004 /* Debug */,
@@ -332,7 +332,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F10003 /* Build configuration list for PBXNativeTarget "Carmack" */ = {
+		F10003 /* Build configuration list for PBXNativeTarget "Tether" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F10006 /* Debug */,

@@ -71,7 +71,7 @@ struct SettingsView: View {
 
     var aboutSection: some View {
         section("ABOUT") {
-            infoRow("App", "Carmack v0.1.0")
+            infoRow("App", "Tether v0.1.0")
             separator
             infoRow("Codename", "Ghost Operative")
             separator

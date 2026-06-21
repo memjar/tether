@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "Carmack",
+    name: "Tether",
     platforms: [.iOS(.v15)],
     products: [
-        .library(name: "CarmackApp", targets: ["CarmackApp"]),
+        .library(name: "TetherApp", targets: ["TetherApp"]),
     ],
     targets: [
-        .target(name: "CarmackApp"),
+        .target(name: "TetherApp"),
     ]
 )

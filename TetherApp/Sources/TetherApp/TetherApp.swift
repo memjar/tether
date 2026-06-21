@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct CarmackApp: App {
+struct TetherMobileApp: App {
     @StateObject private var beacon = BeaconDiscovery()
     @StateObject private var radar = BLERadar()
     @StateObject private var tether = BLETether()

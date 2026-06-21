@@ -7,7 +7,7 @@
 
 - jl1 has Xcode installed with iOS SDK
 - Apple Developer account signed in (Xcode > Settings > Accounts)
-- Bundle ID registered: `diy.tether.carmack` (or whatever you choose)
+- Bundle ID registered: `ca.axetechnologies.tether` (or whatever you choose)
 
 ---
 
@@ -20,53 +20,53 @@ cd tether
 
 ---
 
-## Step 2: Generate Xcode Project for Carmack (iOS)
+## Step 2: Generate Xcode Project for TetherApp (iOS)
 
 ```bash
-cd Carmack
+cd TetherApp
 swift package generate-xcodeproj
 # OR open directly:
 open Package.swift
 ```
 
-Xcode will open and resolve the package. Select the `CarmackApp` scheme.
+Xcode will open and resolve the package. Select the `TetherAppApp` scheme.
 
 ---
 
 ## Step 3: Configure Signing
 
-1. Select the **CarmackApp** target in Xcode
+1. Select the **TetherAppApp** target in Xcode
 2. Go to **Signing & Capabilities**
 3. Set **Team** to your Apple Developer team
-4. Set **Bundle Identifier** to `diy.tether.carmack`
+4. Set **Bundle Identifier** to `ca.axetechnologies.tether`
 5. Check **Automatically manage signing**
 
 ### Add Entitlements
 
-The entitlements file is at `Carmack/CarmackApp.entitlements`. In Xcode:
+The entitlements file is at `TetherApp/TetherAppApp.entitlements`. In Xcode:
 
 1. Go to target > **Signing & Capabilities** > **+ Capability**
 2. Add: **Hotspot Configuration**
 3. Add: **Multicast Networking**
 4. Add: **Access WiFi Information**
-5. Verify these match what's in `CarmackApp.entitlements`
+5. Verify these match what's in `TetherAppApp.entitlements`
 
 ### Add Info.plist Keys
 
-Already configured in `Carmack/Sources/CarmackApp/Info.plist`:
+Already configured in `TetherApp/Sources/TetherAppApp/Info.plist`:
 - `NSBluetoothAlwaysUsageDescription` — BLE radar
 - `NSBluetoothPeripheralUsageDescription` — BLE advertising
 - `NSLocalNetworkUsageDescription` — Bonjour discovery
 - `NSBonjourServices` — `_tether._tcp`
 
 If Xcode doesn't pick up the Info.plist automatically, set it in Build Settings:
-**INFOPLIST_FILE** = `Sources/CarmackApp/Info.plist`
+**INFOPLIST_FILE** = `Sources/TetherAppApp/Info.plist`
 
 ---
 
 ## Step 4: Set Build Configuration
 
-In Xcode, select the CarmackApp target:
+In Xcode, select the TetherAppApp target:
 
 | Setting | Value |
 |---------|-------|
@@ -75,7 +75,7 @@ In Xcode, select the CarmackApp target:
 | Build Configuration | Release |
 | MARKETING_VERSION | 1.0.0 |
 | CURRENT_PROJECT_VERSION | 1 |
-| PRODUCT_BUNDLE_IDENTIFIER | diy.tether.carmack |
+| PRODUCT_BUNDLE_IDENTIFIER | ca.axetechnologies.tether |
 | PRODUCT_NAME | Tether |
 
 ---
@@ -114,7 +114,7 @@ In Xcode, select the CarmackApp target:
 1. Click **+** > **New App**
 2. Platform: **iOS**
 3. Name: **Tether**
-4. Bundle ID: select `diy.tether.carmack`
+4. Bundle ID: select `ca.axetechnologies.tether`
 5. SKU: `tether-ios`
 6. Primary Language: English
 
@@ -144,10 +144,10 @@ Once you have the TestFlight link (format: `https://testflight.apple.com/join/XX
 | Device radar | BLERadar scans all BLE peripherals, estimates distance |
 | Ghost hotspot | MobileWiFi private API (sideload only, `#if GHOST_MODE`) |
 
-### Files in Carmack
+### Files in TetherApp
 
 ```
-CarmackApp.swift          — App entry, wires beacon + radar + tether
+TetherAppApp.swift          — App entry, wires beacon + radar + tether
 Services/
   BeaconDiscovery.swift   — Bonjour NWBrowser, TCP JSON control
   BLERadar.swift          — BLE proximity scanner
@@ -175,8 +175,8 @@ Views/
 ## Troubleshooting
 
 **"No such module" errors**
-- Make sure you opened `Carmack/Package.swift`, not the root `Package.swift`
-- The root package is the macOS app; Carmack is the iOS app
+- Make sure you opened `TetherApp/Package.swift`, not the root `Package.swift`
+- The root package is the macOS app; TetherApp is the iOS app
 
 **Signing errors**
 - Ensure your Apple Developer account has an active membership
