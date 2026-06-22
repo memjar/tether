@@ -126,18 +126,25 @@ Tasks for AI agents:
 | G7 | Index all SKILL.md files across repos | All repos | MEDIUM |
 | G8 | Build repo dependency graph (which repos import from which) | All repos | LOW |
 
-### Team Members (Forge / Klaus / Cortana)
-Tasks for team:
+### Team Members — Fleet Nodes
+- **Nova (JL1)** — primary compute, model hosting, inference
+- **Forge (JL2)** — build/deploy, IMI pipeline, customer-facing
+- **Vigil (JL3)** — agent swarm, memory, perpetuity-loop, ops
 
 | # | Task | Assignee | Repo | Priority |
 |---|------|----------|------|----------|
-| T1 | Review IMI group consolidation, confirm canonical repos | IMI lead | `imi-*`, `theANSWER*` | HIGH |
-| T2 | Review ML/Training group, confirm flywheel canonical | ML lead | `axe-dl`, `AXeGoFlywheel` | HIGH |
-| T3 | Review product repos, confirm which apps ship | Product | `axe-agents`, `axe-browser` | MEDIUM |
-| T4 | Audit axe-ghost for leaked credentials | Security | `axe-ghost` | HIGH |
-| T5 | Audit axe-knox key management | Security | `axe-knox` | HIGH |
-| T6 | Update sprint dashboard task cards | Ops | `observer` | MEDIUM |
-| T7 | Archive previous sprint tasks to training corpus | ML | `WINcorpus` | LOW |
+| T1 | Review IMI group consolidation, confirm canonical repos | Forge (JL2) | `imi-*`, `theANSWER*` | HIGH |
+| T2 | Review ML/Training group, confirm flywheel canonical | Nova (JL1) | `axe-dl`, `AXeGoFlywheel` | HIGH |
+| T3 | Review product repos, confirm which apps ship | Forge (JL2) | `axe-agents`, `axe-browser` | MEDIUM |
+| T4 | Audit axe-ghost for leaked credentials | Vigil (JL3) | `axe-ghost` | HIGH |
+| T5 | Audit axe-knox key management | Vigil (JL3) | `axe-knox` | HIGH |
+| T6 | Update sprint dashboard task cards | Forge (JL2) | `observer` | MEDIUM |
+| T7 | Archive previous sprint tasks to training corpus | Nova (JL1) | `WINcorpus` | LOW |
+| T8 | Run credential scan across all 196 private repos | Nova (JL1) | All repos | CRITICAL |
+| T9 | Memory group consolidation analysis (17 repos) | Vigil (JL3) | `axe-memory`, `axe-crown` | MEDIUM |
+| T10 | Dependency audit (npm/pip) across all repos with packages | Nova (JL1) | All repos | HIGH |
+| T11 | Index all MCP servers + SKILL.md files across org | Vigil (JL3) | All repos | MEDIUM |
+| T12 | Build repo dependency graph (import/require mapping) | Nova (JL1) | All repos | LOW |
 
 ---
 
