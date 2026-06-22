@@ -11,3 +11,4 @@ TetherApp/build/
 Research/
 TETHER-PRODUCT-BLUEPRINT.md
 STARLINK-DESIGN-SPEC.md
+__pycache__/
