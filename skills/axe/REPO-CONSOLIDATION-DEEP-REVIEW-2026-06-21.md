@@ -118,7 +118,7 @@ These repos have distinct purposes with no clear overlap:
 - `axe-anvil` - document engine
 - `axe-atlas` - sovereign database
 - `axe-bunker` - local-first Postgres
-- `axe-bypass` - Claude Code unblocker
+- `axe-headroom` - capacity extension
 - `axe-chat` - encrypted comms
 - `axe-classifier` - intent classifier
 - `axe-config` - system configuration
@@ -170,7 +170,7 @@ Only `tether` and `tether.diy` are public. These were security-scrubbed prior to
 |---|---|
 | `axe-ghost` (46MB) | Pentesting tools, C2 framework, exploit code - verify no leaked creds |
 | `axe-knox` (6.9MB) | Tool-call security, encryption keys - verify key management |
-| `axe-bypass` (1.1MB) | Claude Code unblocker - verify no auth tokens committed |
+| `axe-headroom` (1.1MB) | Capacity extension - verify no auth tokens committed |
 | `axe-config` (1.2MB) | System configuration - likely contains or references secrets |
 | `axe-bunker` (2.4MB) | Database platform - verify no connection strings |
 | `axe-system` (270MB) | Largest repo - broad surface area |

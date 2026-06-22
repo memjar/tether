@@ -43,7 +43,7 @@ TIER 4 — INFRASTRUCTURE SERVICES (5 repos)
   axe-knowledge        <- merge: axe-crown, axe-halo, axe-obsidian, axe-onix, axe-oracle
   axe-mesh             <- merge: axe-axeguard, axe-axescale, axe-wire, axe-vpn, axe-conduit
   axe-database         <- merge: axe-bunker, axe-atlas
-  axe-security         <- merge: axe-ghost, axe-knox, axe-bypass
+  axe-security         <- merge: axe-ghost, axe-knox, axe-headroom
 
 TIER 5 — CLIENT APPS (4 repos)
   axe-ios              <- merge: axe-nano, axe-pulse, axe-lens-ios, axe-beamapp, iosapps
