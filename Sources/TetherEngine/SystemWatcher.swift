@@ -1,21 +1,24 @@
 import Foundation
 import SystemConfiguration
+import CDarwinNotify
 
-final class SystemWatcher {
-    typealias Handler = (String) -> Void
+public final class SystemWatcher {
+    public typealias Handler = (String) -> Void
 
     private var store: SCDynamicStore?
     private var source: CFRunLoopSource?
     private var darwinTokens: [Int32] = []
     private var onChange: Handler?
 
-    func start(onChange: @escaping Handler) {
+    public init() {}
+
+    public func start(onChange: @escaping Handler) {
         self.onChange = onChange
         setupDynamicStore()
         watchDarwinNotifications()
     }
 
-    func stop() {
+    public func stop() {
         if let source = source {
             CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .defaultMode)
         }
@@ -25,17 +28,17 @@ final class SystemWatcher {
         darwinTokens.removeAll()
     }
 
-    func copyInterfaceState(_ iface: String) -> [String: Any]? {
+    public func copyInterfaceState(_ iface: String) -> [String: Any]? {
         guard let store = store else { return nil }
         return SCDynamicStoreCopyValue(store, "State:/Network/Interface/\(iface)/AirPort" as CFString) as? [String: Any]
     }
 
-    func copyGlobalIPv4() -> [String: Any]? {
+    public func copyGlobalIPv4() -> [String: Any]? {
         guard let store = store else { return nil }
         return SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString) as? [String: Any]
     }
 
-    func copyDNS() -> [String: Any]? {
+    public func copyDNS() -> [String: Any]? {
         guard let store = store else { return nil }
         return SCDynamicStoreCopyValue(store, "State:/Network/Global/DNS" as CFString) as? [String: Any]
     }

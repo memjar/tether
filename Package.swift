@@ -15,7 +15,8 @@ let package = Package(
             name: "TetherApp",
             dependencies: ["TetherEngine", "TetherAI", "TetherAPI"]
         ),
-        .target(name: "TetherEngine"),
+        .target(name: "CDarwinNotify", path: "Sources/CDarwinNotify"),
+        .target(name: "TetherEngine", dependencies: ["CDarwinNotify"]),
         .target(name: "TetherAI", dependencies: ["TetherEngine"]),
         .target(name: "TetherAPI", dependencies: ["TetherEngine", "TetherAI"]),
         .testTarget(name: "TetherEngineTests", dependencies: ["TetherEngine"]),
