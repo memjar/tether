@@ -39,7 +39,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         Task { try? await apiServer.start() }
 
-        beam = Beam(config: BeamConfig(baseURL: "https://beam.tether.diy"))
+        beam = Beam(config: BeamConfig(
+            baseURL: "https://beam.tether.diy",
+            ntfyTopic: "axe-jamie",
+            webhookURLs: [
+                "https://axe.observer/api/beam/events",
+                "https://atlas.axe.observer/api/ingest",
+                "https://crown.axe.observer/api/ingest"
+            ]
+        ))
         beam.start()
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)

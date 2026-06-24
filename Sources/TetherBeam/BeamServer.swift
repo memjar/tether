@@ -6,11 +6,12 @@ public final class BeamServer {
     private let store: BeamStore
     private let manifest: BeamManifest
     private let config: BeamConfig
+    private let events: BeamEventBus
     private var listener: NWListener?
     private let queue = DispatchQueue(label: "diy.tether.beam.server")
 
-    public init(port: UInt16, store: BeamStore, manifest: BeamManifest, config: BeamConfig) {
-        self.port = port; self.store = store; self.manifest = manifest; self.config = config
+    public init(port: UInt16, store: BeamStore, manifest: BeamManifest, config: BeamConfig, events: BeamEventBus) {
+        self.port = port; self.store = store; self.manifest = manifest; self.config = config; self.events = events
     }
 
     public func start() {
@@ -53,8 +54,16 @@ public final class BeamServer {
                 return
             }
             let (method, path) = self.parseRequestLine(raw)
-            self.route(conn: conn, method: method, path: path, raw: raw)
+            let remoteAddr = self.remoteAddress(conn)
+            self.route(conn: conn, method: method, path: path, raw: raw, remoteAddr: remoteAddr)
         }
+    }
+
+    private func remoteAddress(_ conn: NWConnection) -> String {
+        if case .hostPort(let host, _) = conn.currentPath?.remoteEndpoint {
+            return "\(host)"
+        }
+        return "unknown"
     }
 
     private func parseRequestLine(_ raw: String) -> (String, String) {
@@ -65,11 +74,26 @@ public final class BeamServer {
         return (method, path)
     }
 
-    private func route(conn: NWConnection, method: String, path: String, raw: String) {
+    private func extractBody(_ raw: String) -> String? {
+        guard let range = raw.range(of: "\r\n\r\n") else { return nil }
+        let body = String(raw[range.upperBound...])
+        return body.isEmpty ? nil : body
+    }
+
+    private func route(conn: NWConnection, method: String, path: String, raw: String, remoteAddr: String) {
+        if !config.apiKey.isEmpty && path != "/health" {
+            let authOk = raw.contains("X-API-Key: \(config.apiKey)") || raw.contains("Authorization: Bearer \(config.apiKey)")
+            if !authOk && method != "GET" {
+                send(conn: conn, status: 401, body: "{\"error\":\"unauthorized\"}")
+                return
+            }
+        }
+
         switch (method, path) {
         case ("GET", "/health"):
             let builds = store.list()
-            send(conn: conn, status: 200, body: "{\"status\":\"ok\",\"service\":\"beam\",\"builds\":\(builds.count),\"port\":\(port)}")
+            let identity = BeamIdentity.current()
+            send(conn: conn, status: 200, body: "{\"status\":\"ok\",\"service\":\"beam\",\"pin\":\"\(identity.pin)\",\"hostname\":\"\(identity.hostname)\",\"builds\":\(builds.count),\"port\":\(port)}")
 
         case ("GET", "/builds"):
             let builds = store.list()
@@ -100,6 +124,13 @@ public final class BeamServer {
                 send(conn: conn, status: 500, body: "{\"error\":\"file read failed\"}")
                 return
             }
+            events.emit(.buildDownloaded, payload: [
+                "id": build.id.uuidString,
+                "name": build.name,
+                "version": build.version,
+                "platform": build.platform.rawValue,
+                "remoteAddr": remoteAddr
+            ])
             let filename = filePath.lastPathComponent
             sendBinary(conn: conn, data: fileData, filename: filename)
 
@@ -119,6 +150,47 @@ public final class BeamServer {
                 send(conn: conn, status: 500, body: "{\"error\":\"encode failed\"}")
             }
 
+        case ("POST", "/webhooks"):
+            guard let body = extractBody(raw),
+                  let data = body.data(using: .utf8),
+                  let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let url = obj["url"] as? String else {
+                send(conn: conn, status: 400, body: "{\"error\":\"url required\"}")
+                return
+            }
+            let label = obj["label"] as? String ?? ""
+            let headers = obj["headers"] as? [String: String] ?? [:]
+            let eventTypes: [BeamEventType]
+            if let evts = obj["events"] as? [String] {
+                eventTypes = evts.compactMap { BeamEventType(rawValue: $0) }
+            } else {
+                eventTypes = []
+            }
+            let hook = BeamWebhook(url: url, events: eventTypes, headers: headers, label: label)
+            events.addWebhook(hook)
+            send(conn: conn, status: 201, body: "{\"id\":\"\(hook.id.uuidString)\",\"status\":\"registered\"}")
+
+        case ("GET", "/webhooks"):
+            let hooks = events.listWebhooks()
+            let encoder = JSONEncoder()
+            if let data = try? encoder.encode(hooks), let json = String(data: data, encoding: .utf8) {
+                send(conn: conn, status: 200, body: json)
+            } else {
+                send(conn: conn, status: 200, body: "[]")
+            }
+
+        case ("DELETE", _) where path.hasPrefix("/webhooks/"):
+            let idStr = String(path.split(separator: "/").last ?? "")
+            guard let uuid = UUID(uuidString: idStr) else {
+                send(conn: conn, status: 400, body: "{\"error\":\"invalid id\"}")
+                return
+            }
+            events.removeWebhook(id: uuid)
+            send(conn: conn, status: 200, body: "{\"status\":\"removed\"}")
+
+        case ("OPTIONS", _):
+            send(conn: conn, status: 200, body: "")
+
         default:
             send(conn: conn, status: 404, body: "{\"error\":\"not found\",\"path\":\"\(path)\"}")
         }
@@ -131,15 +203,23 @@ public final class BeamServer {
     }
 
     private func send(conn: NWConnection, status: Int, body: String, contentType: String = "application/json") {
-        let statusText = status == 200 ? "OK" : status == 404 ? "Not Found" : status == 400 ? "Bad Request" : "Error"
-        let response = "HTTP/1.1 \(status) \(statusText)\r\nContent-Type: \(contentType)\r\nContent-Length: \(body.utf8.count)\r\nAccess-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n\(body)"
+        let statusText: String
+        switch status {
+        case 200: statusText = "OK"
+        case 201: statusText = "Created"
+        case 400: statusText = "Bad Request"
+        case 401: statusText = "Unauthorized"
+        case 404: statusText = "Not Found"
+        default: statusText = "Error"
+        }
+        let response = "HTTP/1.1 \(status) \(statusText)\r\nContent-Type: \(contentType)\r\nContent-Length: \(body.utf8.count)\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, DELETE, OPTIONS\r\nAccess-Control-Allow-Headers: X-API-Key, Authorization, Content-Type\r\nConnection: close\r\n\r\n\(body)"
         conn.send(content: response.data(using: .utf8), contentContext: .finalMessage, isComplete: true, completion: .contentProcessed { _ in
             conn.cancel()
         })
     }
 
     private func sendBinary(conn: NWConnection, data: Data, filename: String) {
-        let header = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"\(filename)\"\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n"
+        let header = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"\(filename)\"\r\nContent-Length: \(data.count)\r\nAccess-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n"
         var full = header.data(using: .utf8)!
         full.append(data)
         conn.send(content: full, contentContext: .finalMessage, isComplete: true, completion: .contentProcessed { _ in

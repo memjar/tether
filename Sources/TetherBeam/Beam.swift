@@ -6,6 +6,9 @@ public final class Beam: ObservableObject {
     @Published public private(set) var discoveredPeers: [BeamPeer] = []
     @Published public private(set) var isRunning = false
 
+    public let identity: BeamIdentity
+    public let events: BeamEventBus
+
     private let config: BeamConfig
     private let store: BeamStore
     private let server: BeamServer
@@ -14,15 +17,28 @@ public final class Beam: ObservableObject {
 
     public init(config: BeamConfig = .default) {
         self.config = config
+        self.identity = BeamIdentity.current()
+        self.events = BeamEventBus(
+            deviceId: identity.pin,
+            ntfyTopic: config.ntfyTopic.isEmpty ? nil : config.ntfyTopic
+        )
         self.store = BeamStore(directory: config.storageDir)
-        self.server = BeamServer(port: config.port, store: store, manifest: manifest, config: config)
+        self.server = BeamServer(port: config.port, store: store, manifest: manifest, config: config, events: events)
         self.discovery = BeamDiscovery(port: config.port)
 
+        for url in config.webhookURLs {
+            events.addWebhook(BeamWebhook(url: url, label: URL(string: url)?.host ?? url))
+        }
+
         discovery.onPeerFound = { [weak self] peer in
-            DispatchQueue.main.async { self?.discoveredPeers.append(peer) }
+            guard let self = self else { return }
+            DispatchQueue.main.async { self.discoveredPeers.append(peer) }
+            self.events.emit(.peerDiscovered, payload: ["name": peer.name, "host": peer.host])
         }
         discovery.onPeerLost = { [weak self] id in
-            DispatchQueue.main.async { self?.discoveredPeers.removeAll { $0.id == id } }
+            guard let self = self else { return }
+            DispatchQueue.main.async { self.discoveredPeers.removeAll { $0.id == id } }
+            self.events.emit(.peerLost, payload: ["id": id])
         }
     }
 
@@ -32,7 +48,8 @@ public final class Beam: ObservableObject {
         discovery.startBrowsing()
         refreshBuilds()
         DispatchQueue.main.async { self.isRunning = true }
-        NSLog("[Beam] started — port %d, store %@", config.port, config.storageDir.path)
+        events.emit(.serverStarted, payload: identity.toDict().merging(["port": "\(config.port)"], uniquingKeysWith: { _, b in b }))
+        NSLog("[Beam] started — PIN %@ port %d store %@", identity.pin, config.port, config.storageDir.path)
     }
 
     public func stop() {
@@ -40,6 +57,7 @@ public final class Beam: ObservableObject {
         discovery.stopAdvertising()
         discovery.stopBrowsing()
         DispatchQueue.main.async { self.isRunning = false }
+        events.emit(.serverStopped, payload: ["pin": identity.pin])
     }
 
     public func upload(fileAt url: URL, name: String, version: String, build: String, platform: BeamPlatform, ghostMode: Bool = false) throws -> BeamBuild {
@@ -49,7 +67,15 @@ public final class Beam: ObservableObject {
             throw BeamError.saveFailed
         }
         refreshBuilds()
-        NSLog("[Beam] uploaded %@ v%@ (%@) — %lld bytes", name, version, platform.rawValue, record.fileSize)
+        events.emit(.buildUploaded, payload: [
+            "id": record.id.uuidString,
+            "name": name,
+            "version": version,
+            "build": build,
+            "platform": platform.rawValue,
+            "size": "\(record.fileSize)",
+            "sha256": record.sha256
+        ])
         return record
     }
 
@@ -67,11 +93,26 @@ public final class Beam: ObservableObject {
 
     public func deleteBuild(id: UUID) -> Bool {
         let ok = store.delete(id: id)
-        if ok { refreshBuilds() }
+        if ok {
+            refreshBuilds()
+            events.emit(.buildDeleted, payload: ["id": id.uuidString])
+        }
         return ok
     }
 
     public func peers() -> [BeamPeer] { discovery.peers() }
+
+    public func addWebhook(url: String, events: [BeamEventType] = [], headers: [String: String] = [:], label: String = "") {
+        self.events.addWebhook(BeamWebhook(url: url, events: events, headers: headers, label: label))
+    }
+
+    public func removeWebhook(id: UUID) {
+        events.removeWebhook(id: id)
+    }
+
+    public func webhooks() -> [BeamWebhook] {
+        events.listWebhooks()
+    }
 
     private func refreshBuilds() {
         let builds = store.list()
