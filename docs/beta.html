@@ -93,9 +93,9 @@
 </head>
 <body>
 <nav>
-    <a href="index.html" class="logo"><div class="logo-dot"></div> Tether</a>
+    <a href="/" class="logo"><div class="logo-dot"></div> Tether</a>
     <div class="nav-links">
-        <a href="index.html">Home</a>
+        <a href="/">Home</a>
         <a href="#features">Features</a>
         <a href="#install">Install</a>
         <a href="#install" class="nav-cta">Join Beta</a>
@@ -159,11 +159,41 @@
 <section class="section">
     <div class="eyebrow fade">Under the Hood</div>
     <h2 class="fade">System-level.</h2>
+    <p class="subtitle fade">Built on reverse-engineered Apple internals. Every layer mapped from binary extraction.</p>
     <div class="arch-grid fade">
-        <div class="arch-card"><div class="arch-label">Sleep Prevention</div><h3>IOPMAssertion</h3><p>Prevents system sleep while beacon is active. Automatic engage/release.</p></div>
-        <div class="arch-card"><div class="arch-label">Network Events</div><h3>SCDynamicStore</h3><p>Real-time interface, route, DNS monitoring. Darwin notification bus.</p></div>
-        <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>BluetoothManager</h3><p>Private framework. MAC addresses, product names, battery levels.</p></div>
-        <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>MobileGestalt</h3><p>Device identity queries. Model, WiFi/BT addresses. Sideload only.</p></div>
+        <div class="arch-card"><div class="arch-label">Sleep Prevention</div><h3>IOPMAssertion</h3><p>Prevents system sleep while beacon is active. Automatic engage/release on beacon state transitions.</p></div>
+        <div class="arch-card"><div class="arch-label">Network Events</div><h3>SCDynamicStore</h3><p>Real-time monitoring of 8 key paths: Global/IPv4, Global/DNS, interface link state. Darwin notification bus for wifi.link.up/down, bluetooth.state.</p></div>
+        <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>BluetoothManager</h3><p>Private framework via dlopen. Device discovery notifications, _name/_address/_productName/_batteryLevel key-value extraction.</p></div>
+        <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>MobileGestalt</h3><p>MGCopyAnswer for DeviceName, ModelNumber, WiFiAddress, BluetoothAddress. Device identity without entitlement gates.</p></div>
+    </div>
+</section>
+
+<section class="section" style="background:var(--dark);">
+    <div class="eyebrow fade">Deep Stack</div>
+    <h2 class="fade">What we extracted.</h2>
+    <p class="subtitle fade">Reverse-engineered from Apple's private frameworks. This is the layer beneath the public SDK.</p>
+    <div class="arch-grid fade" style="grid-template-columns:1fr;">
+        <div class="arch-card" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;">
+            <div>
+                <div class="arch-label">WiFiPeerToPeer.framework</div>
+                <h3 style="font-size:15px;margin-bottom:8px;">WiFi Aware / AWDL</h3>
+                <p style="font-size:12px;color:var(--dim);line-height:1.6;font-family:var(--mono);">WiFiAwarePublisher<br>WiFiAwareSubscriber<br>WiFiAwareDataSession<br>WiFiP2PAWDLState<br>AWDLServiceDiscoveryManager<br>AWDLTrafficRegistration</p>
+            </div>
+            <div>
+                <div class="arch-label">Sharing.framework</div>
+                <h3 style="font-size:15px;margin-bottom:8px;">Remote Hotspot</h3>
+                <p style="font-size:12px;color:var(--dim);line-height:1.6;font-family:var(--mono);">SFRemoteHotspotDevice<br>SFRemoteHotspotInfo<br>SFRemoteHotspotSession<br>SFRemoteHotspotCellular<br>BearerParams</p>
+            </div>
+            <div>
+                <div class="arch-label">InternetSharing XPC</div>
+                <h3 style="font-size:15px;margin-bottom:8px;">com.apple.NetworkSharing</h3>
+                <p style="font-size:12px;color:var(--dim);line-height:1.6;font-family:var(--mono);">create client<br>start service<br>create interface<br>add port forwarding<br>NAT64 / NAT66<br>PF anchor rules</p>
+            </div>
+        </div>
+    </div>
+    <div class="arch-grid fade" style="margin-top:2px;">
+        <div class="arch-card"><div class="arch-label">PacketFilter.framework</div><h3>NAT Engine</h3><p>PFUserCreate, PFUserBeginRules, PFUserCommitRules, PFUserAddRule. Transaction-model firewall programming for network address translation.</p></div>
+        <div class="arch-card"><div class="arch-label">MultipeerConnectivity</div><h3>Mesh Transport</h3><p>Bluetooth + WiFi Direct multiplex. MCSession with AES-128 encryption. Resource transfer with per-peer progress tracking.</p></div>
     </div>
 </section>
 
