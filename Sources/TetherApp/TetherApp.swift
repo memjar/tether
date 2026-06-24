@@ -3,6 +3,7 @@ import SwiftUI
 import TetherEngine
 import TetherAI
 import TetherAPI
+import TetherBeam
 
 @main
 struct TetherApp {
@@ -20,6 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover!
     var engine: TetherEngine!
     var apiServer: TetherAPIServer!
+    var beam: Beam!
     var eventMonitor: Any?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -36,6 +38,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             failover: failover
         )
         Task { try? await apiServer.start() }
+
+        beam = Beam(config: BeamConfig(baseURL: "https://beam.tether.diy"))
+        beam.start()
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
