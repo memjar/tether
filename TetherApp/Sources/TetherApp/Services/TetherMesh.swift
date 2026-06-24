@@ -79,15 +79,19 @@ final class TetherMesh: NSObject, ObservableObject {
         appendMessage(msg)
         broadcast(msg)
 
-        for peer in s.connectedPeers {
-            let progress = s.sendResource(at: url, withName: name, toPeer: peer) { [weak self] _ in
+        for (index, peer) in s.connectedPeers.enumerated() {
+            let trackKey = s.connectedPeers.count > 1 ? "\(name).\(index)" : name
+            let progress = s.sendResource(at: url, withName: name, toPeer: peer) { [weak self] error in
+                if let error = error {
+                    NSLog("[TetherMesh] sendResource to %@ failed: %@", peer.displayName, error.localizedDescription)
+                }
                 DispatchQueue.main.async {
-                    self?.transferProgress.removeValue(forKey: name)
-                    self?.progressObservers.removeValue(forKey: name)
+                    self?.transferProgress.removeValue(forKey: trackKey)
+                    self?.progressObservers.removeValue(forKey: trackKey)
                 }
             }
             if let progress = progress {
-                trackProgress(progress, name: name)
+                trackProgress(progress, key: trackKey)
             }
         }
     }
@@ -102,36 +106,41 @@ final class TetherMesh: NSObject, ObservableObject {
         DispatchQueue.main.async { self.messages.append(msg) }
     }
 
-    private func trackProgress(_ progress: Progress, name: String) {
+    private func trackProgress(_ progress: Progress, key: String) {
         let obs = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] p, _ in
-            DispatchQueue.main.async { self?.transferProgress[name] = p.fractionCompleted }
+            DispatchQueue.main.async { self?.transferProgress[key] = p.fractionCompleted }
         }
-        progressObservers[name] = obs
-        DispatchQueue.main.async { self.transferProgress[name] = 0 }
+        progressObservers[key] = obs
+        DispatchQueue.main.async { self.transferProgress[key] = 0 }
     }
 }
 
 extension TetherMesh: MCSessionDelegate {
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
+        let kind: MeshMessage.Kind
+        let body: String
+        switch state {
+        case .connected:    kind = .peerJoined; body = "joined the mesh"
+        case .notConnected: kind = .peerLeft;   body = "left the mesh"
+        default: return
+        }
+        let msg = MeshMessage(id: UUID(), sender: peerID.displayName, body: body, timestamp: Date(), kind: kind)
         DispatchQueue.main.async {
             self.connectedPeers = session.connectedPeers
-            switch state {
-            case .connected:
-                self.messages.append(MeshMessage(id: UUID(), sender: peerID.displayName, body: "joined the mesh", timestamp: Date(), kind: .peerJoined))
-            case .notConnected:
-                self.messages.append(MeshMessage(id: UUID(), sender: peerID.displayName, body: "left the mesh", timestamp: Date(), kind: .peerLeft))
-            default: break
-            }
+            self.messages.append(msg)
         }
     }
 
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        guard let msg = try? decoder.decode(MeshMessage.self, from: data) else { return }
+        guard let msg = try? decoder.decode(MeshMessage.self, from: data) else {
+            NSLog("[TetherMesh] failed to decode message from %@", peerID.displayName)
+            return
+        }
         appendMessage(msg)
     }
 
     func session(_ session: MCSession, didStartReceivingResourceWithName name: String, fromPeer peerID: MCPeerID, with progress: Progress) {
-        trackProgress(progress, name: name)
+        trackProgress(progress, key: name)
     }
 
     func session(_ session: MCSession, didFinishReceivingResourceWithName name: String, fromPeer peerID: MCPeerID, at url: URL?, withError error: Error?) {
@@ -140,16 +149,25 @@ extension TetherMesh: MCSessionDelegate {
             self.progressObservers.removeValue(forKey: name)
         }
 
-        guard let url = url, error == nil else { return }
+        if let error = error {
+            NSLog("[TetherMesh] receive resource '%@' from %@ failed: %@", name, peerID.displayName, error.localizedDescription)
+            return
+        }
+        guard let url = url else { return }
+
         let dest = dropDir.appendingPathComponent("\(UUID().uuidString)_\(name)")
         do {
             try FileManager.default.moveItem(at: url, to: dest)
-            let file = DroppedFile(id: UUID(), name: name, localURL: dest, sender: peerID.displayName, receivedAt: Date())
-            DispatchQueue.main.async {
-                self.droppedFiles.insert(file, at: 0)
-                self.messages.append(MeshMessage(id: UUID(), sender: peerID.displayName, body: name, timestamp: Date(), kind: .fileReceived))
-            }
-        } catch {}
+        } catch {
+            NSLog("[TetherMesh] failed to move received file '%@': %@", name, error.localizedDescription)
+            return
+        }
+        let file = DroppedFile(id: UUID(), name: name, localURL: dest, sender: peerID.displayName, receivedAt: Date())
+        let msg = MeshMessage(id: UUID(), sender: peerID.displayName, body: name, timestamp: Date(), kind: .fileReceived)
+        DispatchQueue.main.async {
+            self.droppedFiles.insert(file, at: 0)
+            self.messages.append(msg)
+        }
     }
 
     func session(_ session: MCSession, didReceive stream: InputStream, withName name: String, fromPeer peerID: MCPeerID) {}
@@ -160,16 +178,20 @@ extension TetherMesh: MCNearbyServiceAdvertiserDelegate {
         invitationHandler(true, session)
     }
 
-    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {}
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
+        NSLog("[TetherMesh] advertiser failed: %@", error.localizedDescription)
+    }
 }
 
 extension TetherMesh: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
-        guard let s = session else { return }
-        guard !s.connectedPeers.contains(peerID) else { return }
+        guard let s = session, !s.connectedPeers.contains(peerID) else { return }
         browser.invitePeer(peerID, to: s, withContext: nil, timeout: 10)
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {}
-    func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {}
+
+    func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
+        NSLog("[TetherMesh] browser failed: %@", error.localizedDescription)
+    }
 }

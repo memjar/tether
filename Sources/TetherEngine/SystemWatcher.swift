@@ -21,17 +21,13 @@ final class SystemWatcher {
         }
         source = nil
         store = nil
-        for token in darwinTokens {
-            var t = token
-            notify_cancel(t)
-        }
+        darwinTokens.forEach { notify_cancel($0) }
         darwinTokens.removeAll()
     }
 
     func copyInterfaceState(_ iface: String) -> [String: Any]? {
         guard let store = store else { return nil }
-        let key = "State:/Network/Interface/\(iface)/AirPort" as CFString
-        return SCDynamicStoreCopyValue(store, key) as? [String: Any]
+        return SCDynamicStoreCopyValue(store, "State:/Network/Interface/\(iface)/AirPort" as CFString) as? [String: Any]
     }
 
     func copyGlobalIPv4() -> [String: Any]? {
@@ -45,11 +41,15 @@ final class SystemWatcher {
     }
 
     private func setupDynamicStore() {
-        var ctx = SCDynamicStoreContext(version: 0, info: Unmanaged.passUnretained(self).toOpaque(), retain: nil, release: nil, copyDescription: nil)
-        store = SCDynamicStoreCreate(nil, "Tether" as CFString, { (_, keys, info) in
-            guard let info = info else { return }
+        var ctx = SCDynamicStoreContext(
+            version: 0,
+            info: Unmanaged.passUnretained(self).toOpaque(),
+            retain: nil, release: nil, copyDescription: nil
+        )
+        store = SCDynamicStoreCreate(nil, "Tether" as CFString, { _, keys, info in
+            guard let info = info,
+                  let changedKeys = keys as? [String] else { return }
             let watcher = Unmanaged<SystemWatcher>.fromOpaque(info).takeUnretainedValue()
-            guard let changedKeys = keys as? [String] else { return }
             for key in changedKeys {
                 watcher.onChange?(key)
             }
@@ -57,7 +57,7 @@ final class SystemWatcher {
 
         guard let store = store else { return }
 
-        let watchKeys = [
+        let watchKeys: [CFString] = [
             "State:/Network/Global/IPv4",
             "State:/Network/Global/IPv6",
             "State:/Network/Global/DNS",
@@ -66,14 +66,14 @@ final class SystemWatcher {
             "State:/Network/Interface/en1/AirPort",
             "State:/Network/Interface/bridge100/IPv4",
             "Setup:/Network/Global/IPv4"
-        ] as CFArray
+        ].map { $0 as CFString }
 
-        let patterns = [
+        let patterns: [CFString] = [
             "State:/Network/Interface/.*/Link",
             "State:/Network/Interface/.*/IPv4"
-        ] as CFArray
+        ].map { $0 as CFString }
 
-        SCDynamicStoreSetNotificationKeys(store, watchKeys, patterns)
+        SCDynamicStoreSetNotificationKeys(store, watchKeys as CFArray, patterns as CFArray)
 
         source = SCDynamicStoreCreateRunLoopSource(nil, store, 0)
         if let source = source {
@@ -89,12 +89,10 @@ final class SystemWatcher {
             "com.apple.wifi.link.down",
             "com.apple.bluetooth.state"
         ]
-
         for event in events {
             var token: Int32 = 0
-            let name = event
-            notify_register_dispatch(name, &token, DispatchQueue.main) { [weak self] _ in
-                self?.onChange?(name)
+            notify_register_dispatch(event, &token, DispatchQueue.main) { [weak self] _ in
+                self?.onChange?(event)
             }
             darwinTokens.append(token)
         }

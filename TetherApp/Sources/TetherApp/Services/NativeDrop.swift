@@ -30,14 +30,15 @@ final class NativeDrop: NSObject, ObservableObject {
             DispatchQueue.main.async { self.transferState = .failed("Sharing.framework unavailable") }
             return
         }
-
         DispatchQueue.main.async { self.transferState = .discovering }
 
-        if let dcClass = NSClassFromString("SFAirDropDiscoveryController") as? NSObject.Type {
-            discoveryController = dcClass.init()
-            discoveryController?.perform(NSSelectorFromString("setDelegate:"), with: self)
-            discoveryController?.perform(NSSelectorFromString("startDiscovery"))
+        guard let dcClass = NSClassFromString("SFAirDropDiscoveryController") as? NSObject.Type else {
+            NSLog("[NativeDrop] SFAirDropDiscoveryController class not found")
+            return
         }
+        discoveryController = dcClass.init()
+        discoveryController?.perform(NSSelectorFromString("setDelegate:"), with: self)
+        discoveryController?.perform(NSSelectorFromString("startDiscovery"))
     }
 
     func stopDiscovery() {
@@ -50,25 +51,31 @@ final class NativeDrop: NSObject, ObservableObject {
     }
 
     func sendFile(at url: URL, to target: DropTarget) {
-        guard let tmClass = NSClassFromString("SFAirDropTransferManager") as? NSObject.Type else { return }
-        transferManager = tmClass.perform(NSSelectorFromString("sharedInstance"))?.takeUnretainedValue() as? NSObject
+        guard let tmClass = NSClassFromString("SFAirDropTransferManager") as? NSObject.Type else {
+            NSLog("[NativeDrop] SFAirDropTransferManager class not found")
+            return
+        }
+        guard let instance = tmClass.perform(NSSelectorFromString("sharedInstance"))?.takeUnretainedValue() as? NSObject else {
+            NSLog("[NativeDrop] failed to get sharedInstance")
+            return
+        }
+        transferManager = instance
 
         DispatchQueue.main.async { self.transferState = .sending(url.lastPathComponent, 0) }
 
+        let sel = NSSelectorFromString("sendItems:toNode:")
+        guard instance.responds(to: sel) else {
+            NSLog("[NativeDrop] sendItems:toNode: not available")
+            DispatchQueue.main.async { self.transferState = .failed("Transfer API unavailable") }
+            return
+        }
         let items = [url] as NSArray
-        transferManager?.perform(NSSelectorFromString("sendItems:toNode:completionHandler:"), with: items, with: target.id)
-    }
-
-    func sendViaActivitySheet(items: [Any], from viewController: UIViewController) {
-        let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        viewController.present(ac, animated: true)
+        instance.perform(sel, with: items, with: target.id)
     }
 
     #else
 
-    func startDiscovery() {
-        DispatchQueue.main.async { self.transferState = .discovering }
-    }
+    func startDiscovery() {}
 
     func stopDiscovery() {
         DispatchQueue.main.async {
@@ -77,10 +84,10 @@ final class NativeDrop: NSObject, ObservableObject {
         }
     }
 
+    #endif
+
     func sendViaActivitySheet(items: [Any], from viewController: UIViewController) {
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
         viewController.present(ac, animated: true)
     }
-
-    #endif
 }
