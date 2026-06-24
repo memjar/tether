@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tether — Mesh &amp; Drop Demo</title>
+    <meta name="description" content="Mesh chat, file drop, and deep radar. Bluetooth-powered features coming to Tether.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--accent:#D4AF37;--dark:#0a0a0c;--card:#111113;--text:#e5e5e5;--dim:#737373;--mono:'IBM Plex Mono',monospace;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'Space Grotesk',sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+        nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,12,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);}
+        .logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:300;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;color:#fff;}
+        .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(212,175,55,0.4);}
+        .nav-links{display:flex;gap:32px;align-items:center;}
+        .nav-links a{color:var(--dim);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s;}
+        .nav-links a:hover{color:#fff;}
+        .nav-cta{background:var(--accent);padding:10px 28px;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#000 !important;transition:all 0.2s;}
+        .nav-cta:hover{background:#fff;}
+
+        .section{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:120px 40px;}
+        .eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:20px;display:flex;align-items:center;gap:12px;justify-content:center;}
+        .eyebrow::before,.eyebrow::after{content:"";width:24px;height:1px;background:var(--accent);opacity:0.4;}
+        h1{font-size:clamp(40px,7vw,80px);font-weight:300;letter-spacing:-0.03em;line-height:1.05;text-align:center;margin-bottom:20px;}
+        h1 span{color:var(--accent);}
+        h2{font-size:clamp(32px,5vw,56px);font-weight:300;letter-spacing:-0.02em;line-height:1.1;text-align:center;margin-bottom:20px;}
+        .subtitle{font-size:17px;color:var(--dim);line-height:1.7;max-width:520px;text-align:center;margin:0 auto 48px;}
+
+        .fade{opacity:0;transform:translateY(30px);transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1),transform 0.9s cubic-bezier(0.16,1,0.3,1);}
+        .fade.visible{opacity:1;transform:translateY(0);}
+        .fade-d1{transition-delay:0.1s;}.fade-d2{transition-delay:0.2s;}.fade-d3{transition-delay:0.3s;}
+
+        /* HERO */
+        .hero{padding-top:160px;position:relative;}
+        .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,0.04) 0%,transparent 70%);pointer-events:none;}
+
+        /* DEMO CARDS */
+        .demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:1080px;width:100%;margin-top:64px;}
+        .demo-card{background:var(--card);padding:48px 36px;position:relative;overflow:hidden;transition:background 0.3s,transform 0.3s;}
+        .demo-card:hover{background:rgba(212,175,55,0.03);transform:translateY(-4px);}
+        .demo-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:0;transition:opacity 0.3s;}
+        .demo-card:hover::before{opacity:1;}
+        .demo-card-icon{width:48px;height:48px;margin-bottom:24px;display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.12);}
+        .demo-card h3{font-size:20px;font-weight:600;margin-bottom:10px;letter-spacing:-0.01em;}
+        .demo-card p{font-size:14px;color:var(--dim);line-height:1.6;}
+        .demo-card .badge-row{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;}
+        .demo-badge{font-size:10px;font-weight:600;padding:4px 10px;font-family:var(--mono);background:rgba(212,175,55,0.1);color:var(--accent);letter-spacing:0.04em;}
+
+        /* MESH CHAT DEMO */
+        .chat-demo{max-width:480px;width:100%;background:var(--card);border:1px solid rgba(255,255,255,0.04);overflow:hidden;}
+        .chat-header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;}
+        .chat-header-left{display:flex;align-items:center;gap:12px;}
+        .chat-header-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s ease-in-out infinite;}
+        @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,0.4);}50%{box-shadow:0 0 0 6px rgba(212,175,55,0);}}
+        .chat-header-title{font-size:13px;font-weight:600;}
+        .chat-peer-count{font-size:11px;font-family:var(--mono);color:var(--accent);}
+        .chat-messages{padding:20px 24px;min-height:300px;display:flex;flex-direction:column;gap:8px;}
+        .chat-sys{text-align:center;font-size:10px;font-family:var(--mono);color:var(--dim);padding:8px 0;display:flex;align-items:center;gap:12px;justify-content:center;}
+        .chat-sys::before,.chat-sys::after{content:"";flex:1;height:1px;background:rgba(255,255,255,0.04);}
+        .chat-bubble{max-width:80%;padding:10px 16px;font-size:13px;line-height:1.5;animation:slideIn 0.4s ease;}
+        @keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        .chat-self{align-self:flex-end;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.15);color:var(--text);}
+        .chat-other{align-self:flex-start;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.04);color:var(--text);}
+        .chat-bubble .sender{font-size:10px;font-family:var(--mono);color:var(--accent);margin-bottom:4px;}
+        .chat-file{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.1);max-width:80%;animation:slideIn 0.4s ease;}
+        .chat-file-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,0.1);}
+        .chat-file-info{flex:1;}
+        .chat-file-name{font-size:12px;font-weight:600;}
+        .chat-file-size{font-size:10px;font-family:var(--mono);color:var(--dim);}
+        .chat-input{padding:16px 24px;border-top:1px solid rgba(255,255,255,0.04);display:flex;gap:12px;align-items:center;}
+        .chat-input-field{flex:1;padding:10px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#fff;font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color 0.2s;}
+        .chat-input-field:focus{border-color:var(--accent);}
+        .chat-input-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--accent);border:none;cursor:pointer;transition:background 0.2s;}
+        .chat-input-btn:hover{background:#fff;}
+        .chat-input-btn svg{width:16px;height:16px;}
+
+        /* FILE DROP DEMO */
+        .drop-demo{max-width:480px;width:100%;margin-top:48px;}
+        .drop-zone{border:2px dashed rgba(212,175,55,0.2);padding:60px 40px;text-align:center;transition:border-color 0.3s,background 0.3s;position:relative;overflow:hidden;}
+        .drop-zone.active{border-color:var(--accent);background:rgba(212,175,55,0.03);}
+        .drop-zone-icon{margin:0 auto 20px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;}
+        .drop-zone h3{font-size:16px;font-weight:600;margin-bottom:8px;}
+        .drop-zone p{font-size:13px;color:var(--dim);}
+        .drop-progress{margin-top:24px;display:none;}
+        .drop-progress.active{display:block;}
+        .drop-bar-wrap{height:4px;background:rgba(255,255,255,0.06);overflow:hidden;}
+        .drop-bar{height:100%;background:var(--accent);width:0%;transition:width 0.3s;}
+        .drop-status{font-size:11px;font-family:var(--mono);color:var(--accent);margin-top:8px;text-align:center;}
+        .drop-receivers{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;}
+        .drop-receiver{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);transition:border-color 0.3s,background 0.3s;cursor:pointer;}
+        .drop-receiver:hover{border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.03);}
+        .drop-receiver-icon{width:32px;height:32px;border-radius:50%;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;}
+        .drop-receiver-name{font-size:11px;font-weight:600;}
+        .drop-receiver-type{font-size:9px;font-family:var(--mono);color:var(--dim);}
+
+        /* DEEP RADAR DEMO */
+        .radar-demo{max-width:560px;width:100%;}
+        .radar-canvas{width:100%;display:block;}
+        .radar-device-list{margin-top:32px;display:flex;flex-direction:column;gap:4px;}
+        .radar-device{display:flex;align-items:center;gap:16px;padding:12px 20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);transition:border-color 0.2s,background 0.2s;}
+        .radar-device:hover{border-color:rgba(212,175,55,0.2);background:rgba(212,175,55,0.02);}
+        .radar-device-dot{width:10px;height:10px;border-radius:50%;}
+        .radar-device-info{flex:1;}
+        .radar-device-name{font-size:13px;font-weight:600;}
+        .radar-device-meta{font-size:10px;font-family:var(--mono);color:var(--dim);}
+        .radar-device-tags{display:flex;gap:4px;}
+        .radar-tag{font-size:9px;font-weight:600;padding:3px 8px;font-family:var(--mono);}
+        .tag-apple{background:rgba(212,175,55,0.12);color:var(--accent);}
+        .tag-battery{background:rgba(34,197,94,0.12);color:#22c55e;}
+        .tag-unknown{background:rgba(255,255,255,0.06);color:var(--dim);}
+        .tag-ghost{background:rgba(147,51,234,0.15);color:#a855f7;}
+
+        /* ARCHITECTURE SECTION */
+        .arch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;max-width:800px;width:100%;}
+        .arch-card{background:var(--card);padding:36px;position:relative;}
+        .arch-card::after{content:"";position:absolute;bottom:0;left:24px;right:24px;height:1px;background:rgba(212,175,55,0.06);}
+        .arch-card:last-child::after,.arch-card:nth-last-child(2)::after{display:none;}
+        .arch-label{font-size:10px;font-family:var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+        .arch-card h3{font-size:16px;font-weight:600;margin-bottom:6px;}
+        .arch-card p{font-size:13px;color:var(--dim);line-height:1.5;}
+
+        /* FOOTER */
+        .footer{border-top:1px solid rgba(255,255,255,0.04);padding:48px;text-align:center;}
+        .footer p{font-size:12px;color:#525252;font-family:var(--mono);}
+        .footer a{color:var(--accent);text-decoration:none;}
+
+        @media(max-width:768px){
+            nav{padding:16px 20px;}
+            .nav-links a:not(.nav-cta){display:none;}
+            .demo-grid{grid-template-columns:1fr;}
+            .arch-grid{grid-template-columns:1fr;}
+            .section{padding:100px 20px;}
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo"><div class="logo-dot"></div> Tether</a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#mesh">Mesh</a>
+        <a href="#drop">Drop</a>
+        <a href="#radar">Radar</a>
+        <a href="download.html" class="nav-cta">Download</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="section hero">
+    <div class="eyebrow fade">Coming Soon</div>
+    <h1 class="fade fade-d1">Mesh. Drop.<br><span>Go dark.</span></h1>
+    <p class="subtitle fade fade-d2">Bluetooth mesh chat. Peer-to-peer file drops. Deep device radar. No internet required.</p>
+    <div class="demo-grid fade fade-d3">
+        <div class="demo-card">
+            <div class="demo-card-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M4 18l4-4h8l4 4"/><path d="M4 6l4 4h8l4-4"/><circle cx="12" cy="12" r="2"/></svg></div>
+            <h3>Mesh Chat</h3>
+            <p>Encrypted group messaging over Bluetooth and WiFi Direct. No cell towers, no routers, no servers.</p>
+            <div class="badge-row"><span class="demo-badge">MultipeerConnectivity</span><span class="demo-badge">BLE + WiFi</span><span class="demo-badge">E2E Encrypted</span></div>
+        </div>
+        <div class="demo-card">
+            <div class="demo-card-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></div>
+            <h3>File Drop</h3>
+            <p>Drag, drop, done. Send files to any nearby device over Bluetooth mesh. AirDrop without the Apple tax.</p>
+            <div class="badge-row"><span class="demo-badge">Peer-to-Peer</span><span class="demo-badge">Any File Type</span><span class="demo-badge">Progress Tracking</span></div>
+        </div>
+        <div class="demo-card">
+            <div class="demo-card-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#D4AF37"/><line x1="12" y1="3" x2="12" y2="1"/><line x1="12" y1="23" x2="12" y2="21"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>
+            <h3>Deep Radar</h3>
+            <p>Enhanced device scanning. Manufacturer ID, battery levels, model detection. See everything around you.</p>
+            <div class="badge-row"><span class="demo-badge">CoreBluetooth</span><span class="demo-badge">Darwin Notify</span><span class="demo-badge">Private API</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- MESH CHAT DEMO -->
+<section class="section" id="mesh" style="background:var(--dark);">
+    <div class="eyebrow fade">Mesh Chat</div>
+    <h2 class="fade">A chatroom opens<br>with every beacon.</h2>
+    <p class="subtitle fade">When you open a beacon, a mesh chatroom auto-creates. Anyone in range joins. Messages travel over Bluetooth Low Energy and WiFi Direct. No internet needed.</p>
+    <div class="chat-demo fade" id="chatDemo">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-header-dot"></div>
+                <span class="chat-header-title">Tether Mesh</span>
+            </div>
+            <span class="chat-peer-count" id="peerCount">0 peers</span>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" class="chat-input-field" placeholder="Message the mesh..." readonly>
+            <button class="chat-input-btn"><svg viewBox="0 0 16 16" fill="#000"><path d="M1 8l6-6v4h8v4H7v4z" transform="rotate(-90 8 8)"/></svg></button>
+        </div>
+    </div>
+</section>
+
+<!-- FILE DROP DEMO -->
+<section class="section" id="drop">
+    <div class="eyebrow fade">File Drop</div>
+    <h2 class="fade">Drop files<br>to anyone nearby.</h2>
+    <p class="subtitle fade">Peer-to-peer file transfer over Bluetooth mesh. Drag a file in, pick a receiver, watch it fly. Progress bars, checksums, the works.</p>
+    <div class="drop-demo fade">
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon"><svg width="40" height="40" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><path d="M20 8v16M14 14l6-6 6 6"/><rect x="6" y="24" width="28" height="10" rx="2"/><circle cx="28" cy="29" r="1.5" fill="#D4AF37"/></svg></div>
+            <h3>Drop files here</h3>
+            <p>Or click to browse. Any file type, any size.</p>
+            <div class="drop-progress" id="dropProgress">
+                <div class="drop-bar-wrap"><div class="drop-bar" id="dropBar"></div></div>
+                <div class="drop-status" id="dropStatus">Sending...</div>
+            </div>
+        </div>
+        <div class="drop-receivers" id="dropReceivers"></div>
+    </div>
+</section>
+
+<!-- DEEP RADAR DEMO -->
+<section class="section" id="radar" style="background:var(--dark);">
+    <div class="eyebrow fade">Deep Radar</div>
+    <h2 class="fade">See everything.<br>Every device. Every detail.</h2>
+    <p class="subtitle fade">Enhanced scanning pulls manufacturer, model, battery level, and more. Ghost mode unlocks BluetoothManager and MobileGestalt for full device fingerprinting.</p>
+    <div class="radar-demo fade">
+        <canvas class="radar-canvas" id="deepRadar" width="1120" height="560"></canvas>
+        <div class="radar-device-list" id="radarList"></div>
+    </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="section">
+    <div class="eyebrow fade">Under the Hood</div>
+    <h2 class="fade">System-level integration.</h2>
+    <p class="subtitle fade">Every feature hooks into macOS and iOS at the deepest level we can reach.</p>
+    <div class="arch-grid fade">
+        <div class="arch-card">
+            <div class="arch-label">Sleep Prevention</div>
+            <h3>IOPMAssertion</h3>
+            <p>Prevents system sleep while your beacon is active. Automatic engage/release lifecycle.</p>
+        </div>
+        <div class="arch-card">
+            <div class="arch-label">Network Events</div>
+            <h3>SCDynamicStore</h3>
+            <p>Real-time interface, route, and DNS change detection. Darwin notification bus for WiFi and Bluetooth state.</p>
+        </div>
+        <div class="arch-card">
+            <div class="arch-label">Ghost Mode</div>
+            <h3>BluetoothManager</h3>
+            <p>Private framework access for full device discovery. MAC addresses, product names, battery levels.</p>
+        </div>
+        <div class="arch-card">
+            <div class="arch-label">Ghost Mode</div>
+            <h3>MobileGestalt</h3>
+            <p>Device identity queries. Model number, WiFi address, Bluetooth address, device name. Sideload only.</p>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>tether.diy &mdash; <a href="https://axetechnologies.ca">AXE Technologies</a> &mdash; 2026</p>
+</footer>
+
+<script>
+// FADE IN
+const obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.15});
+document.querySelectorAll('.fade').forEach(function(el){obs.observe(el);});
+
+// CHAT DEMO — auto-play conversation
+(function(){
+const msgs=document.getElementById('chatMessages');
+const peerEl=document.getElementById('peerCount');
+if(!msgs)return;
+const script=[
+    {type:'sys',text:'Beacon opened',delay:800},
+    {type:'sys',text:'iPhone 15 Pro joined',delay:1200},
+    {type:'peer',sender:'iPhone 15 Pro',text:'yo anyone here?',delay:1800},
+    {type:'sys',text:'MacBook Air joined',delay:2400},
+    {type:'self',text:'welcome to the mesh',delay:3200},
+    {type:'peer',sender:'MacBook Air',text:'this works without wifi??',delay:4200},
+    {type:'self',text:'pure bluetooth. no internet needed',delay:5200},
+    {type:'file',sender:'iPhone 15 Pro',name:'site-map.pdf',size:'2.4 MB',delay:6400},
+    {type:'sys',text:'iPad Air joined',delay:7600},
+    {type:'peer',sender:'iPad Air',text:'just walked in range, got the file too',delay:8800},
+    {type:'self',text:'mesh auto-syncs everything',delay:9800},
+];
+let peers=0,idx=0;
+function next(){
+    if(idx>=script.length){setTimeout(function(){msgs.innerHTML='';peers=0;peerEl.textContent='0 peers';idx=0;next();},4000);return;}
+    const s=script[idx];idx++;
+    if(s.type==='sys'){
+        if(s.text.includes('joined')){peers++;peerEl.textContent=peers+' peer'+(peers>1?'s':'');}
+        const el=document.createElement('div');el.className='chat-sys';el.textContent=s.text;msgs.appendChild(el);
+    }else if(s.type==='self'){
+        const el=document.createElement('div');el.className='chat-bubble chat-self';el.textContent=s.text;msgs.appendChild(el);
+    }else if(s.type==='peer'){
+        const el=document.createElement('div');el.className='chat-bubble chat-other';
+        el.innerHTML='<div class="sender">'+s.sender+'</div>'+s.text;
+        msgs.appendChild(el);
+    }else if(s.type==='file'){
+        const el=document.createElement('div');el.className='chat-file';
+        el.innerHTML='<div class="chat-file-icon"><svg width="16" height="16" fill="none" stroke="#D4AF37" stroke-width="1.5"><path d="M4 2h5l5 5v7a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M9 2v5h5"/></svg></div><div class="chat-file-info"><div class="chat-file-name">'+s.name+'</div><div class="chat-file-size">'+s.size+' from '+s.sender+'</div></div>';
+        msgs.appendChild(el);
+    }
+    msgs.scrollTop=msgs.scrollHeight;
+    if(idx<script.length)setTimeout(next,script[idx].delay-s.delay);
+}
+setTimeout(next,1000);
+})();
+
+// FILE DROP DEMO
+(function(){
+const zone=document.getElementById('dropZone');
+const progress=document.getElementById('dropProgress');
+const bar=document.getElementById('dropBar');
+const status=document.getElementById('dropStatus');
+const list=document.getElementById('dropReceivers');
+if(!zone)return;
+const receivers=[
+    {name:'iPhone 15',type:'iPhone'},
+    {name:'MacBook Air',type:'Mac'},
+    {name:'iPad Air',type:'iPad'},
+];
+receivers.forEach(function(r){
+    const el=document.createElement('div');el.className='drop-receiver';
+    el.innerHTML='<div class="drop-receiver-icon"><svg width="16" height="16" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"/></svg></div><div class="drop-receiver-name">'+r.name+'</div><div class="drop-receiver-type">'+r.type+'</div>';
+    el.addEventListener('click',function(){runTransfer(r.name);});
+    list.appendChild(el);
+});
+function runTransfer(target){
+    progress.classList.add('active');
+    bar.style.width='0%';status.textContent='Connecting to '+target+'...';
+    var pct=0;
+    var iv=setInterval(function(){
+        pct+=Math.random()*8+2;if(pct>100)pct=100;
+        bar.style.width=pct+'%';
+        if(pct<30)status.textContent='Sending to '+target+'... '+Math.floor(pct)+'%';
+        else if(pct<90)status.textContent='Transferring... '+Math.floor(pct)+'%';
+        else if(pct>=100){clearInterval(iv);status.textContent='Delivered to '+target;bar.style.background='#22c55e';setTimeout(function(){progress.classList.remove('active');bar.style.width='0%';bar.style.background='';},3000);}
+    },120);
+}
+zone.addEventListener('click',function(){if(receivers.length)runTransfer(receivers[0].name);});
+var dragCount=0;
+zone.addEventListener('dragenter',function(e){e.preventDefault();dragCount++;zone.classList.add('active');});
+zone.addEventListener('dragleave',function(){dragCount--;if(dragCount<=0){dragCount=0;zone.classList.remove('active');}});
+zone.addEventListener('dragover',function(e){e.preventDefault();});
+zone.addEventListener('drop',function(e){e.preventDefault();dragCount=0;zone.classList.remove('active');if(receivers.length)runTransfer(receivers[0].name);});
+})();
+
+// DEEP RADAR
+(function(){
+var C=document.getElementById('deepRadar');if(!C)return;
+var ctx=C.getContext('2d');var DPR=window.devicePixelRatio||1;
+var DISPLAY=560;
+function resize(){DISPLAY=Math.min(560,C.parentElement.clientWidth);C.width=DISPLAY*DPR;C.height=DISPLAY*DPR;C.style.width=DISPLAY+'px';C.style.height=DISPLAY+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
+resize();window.addEventListener('resize',resize);
+var cx,cy,maxR,sweep=0,t=0;
+var devices=[
+    {name:'iPhone 15 Pro',mfr:'Apple',model:'D84',bat:87,rssi:-38,dist:0.18,a:0.4,spd:0.0003,apple:true},
+    {name:'MacBook Air M3',mfr:'Apple',model:'J615',bat:64,rssi:-52,dist:0.32,a:2.1,spd:0.0002,apple:true},
+    {name:'AirPods Pro',mfr:'Apple',model:'B568',bat:42,rssi:-45,dist:0.22,a:4.8,spd:0.0005,apple:true},
+    {name:'iPad Air',mfr:'Apple',model:'J408',bat:91,rssi:-58,dist:0.45,a:1.2,spd:0.0004,apple:true},
+    {name:'Galaxy S24',mfr:'Samsung',bat:73,rssi:-62,dist:0.55,a:3.4,spd:0.0001,apple:false},
+    {name:'Unknown',mfr:'Unknown',rssi:-78,dist:0.75,a:5.5,spd:0.0006,apple:false},
+    {name:'HomePod mini',mfr:'Apple',model:'B688',bat:null,rssi:-55,dist:0.38,a:0.8,spd:0.0001,apple:true},
+];
+function draw(){
+    t++;cx=DISPLAY/2;cy=DISPLAY/2;maxR=DISPLAY*0.42;
+    ctx.clearRect(0,0,DISPLAY,DISPLAY);
+    for(var i=1;i<=4;i++){var r=maxR*(i/4);ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,0.07)';ctx.lineWidth=1;ctx.stroke();}
+    ctx.beginPath();ctx.moveTo(cx-maxR,cy);ctx.lineTo(cx+maxR,cy);ctx.moveTo(cx,cy-maxR);ctx.lineTo(cx,cy+maxR);ctx.strokeStyle='rgba(212,175,55,0.04)';ctx.lineWidth=1;ctx.stroke();
+    sweep+=0.01;if(sweep>Math.PI*2)sweep-=Math.PI*2;
+    ctx.save();ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,maxR,sweep-0.4,sweep);ctx.closePath();
+    var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR);grd.addColorStop(0,'rgba(212,175,55,0.12)');grd.addColorStop(1,'rgba(212,175,55,0)');
+    ctx.fillStyle=grd;ctx.fill();ctx.restore();
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(sweep)*maxR,cy+Math.sin(sweep)*maxR);ctx.strokeStyle='rgba(212,175,55,0.4)';ctx.lineWidth=1.5;ctx.stroke();
+    for(var j=0;j<devices.length;j++){
+        var d=devices[j];d.a+=d.spd+Math.sin(t*0.008+j)*0.0001;
+        var dx=cx+Math.cos(d.a)*d.dist*maxR,dy=cy+Math.sin(d.a)*d.dist*maxR;
+        var alpha=Math.max(0.3,1-(Math.abs(d.rssi)-30)/60);
+        var dotR=d.apple?5:4;
+        var glow=ctx.createRadialGradient(dx,dy,0,dx,dy,dotR+10);
+        glow.addColorStop(0,'rgba(212,175,55,'+(alpha*0.12)+')');glow.addColorStop(1,'transparent');
+        ctx.fillStyle=glow;ctx.beginPath();ctx.arc(dx,dy,dotR+10,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.arc(dx,dy,dotR,0,Math.PI*2);
+        ctx.fillStyle=d.apple?'rgba(212,175,55,'+alpha+')':'rgba(255,255,255,'+(alpha*0.5)+')';ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='500 9px "IBM Plex Mono"';ctx.textAlign='center';
+        ctx.fillText(d.name,dx,dy-dotR-6);
+        if(d.bat!==undefined&&d.bat!==null){
+            ctx.fillStyle=d.bat>50?'rgba(34,197,94,0.6)':'rgba(239,68,68,0.6)';
+            ctx.font='400 8px "IBM Plex Mono"';ctx.fillText(d.bat+'%',dx,dy+dotR+12);
+        }
+    }
+    var pR=10+Math.sin(t*0.04)*2;ctx.beginPath();ctx.arc(cx,cy,pR,0,Math.PI*2);ctx.strokeStyle='rgba(212,175,55,0.3)';ctx.lineWidth=1;ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fillStyle='#D4AF37';ctx.fill();
+    ctx.fillStyle='#000';ctx.font='bold 7px "Space Grotesk"';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('T',cx,cy);ctx.textBaseline='alphabetic';
+    requestAnimationFrame(draw);
+}
+draw();
+var listEl=document.getElementById('radarList');
+devices.forEach(function(d){
+    var row=document.createElement('div');row.className='radar-device';
+    var color=d.apple?'#D4AF37':'rgba(255,255,255,0.3)';
+    var tags='';
+    if(d.apple)tags+='<span class="radar-tag tag-apple">Apple</span>';
+    if(d.bat!==undefined&&d.bat!==null)tags+='<span class="radar-tag tag-battery">'+d.bat+'%</span>';
+    if(d.model)tags+='<span class="radar-tag tag-ghost">'+d.model+'</span>';
+    if(d.name==='Unknown')tags+='<span class="radar-tag tag-unknown">Unidentified</span>';
+    row.innerHTML='<div class="radar-device-dot" style="background:'+color+';"></div><div class="radar-device-info"><div class="radar-device-name">'+d.name+'</div><div class="radar-device-meta">'+d.mfr+' &middot; '+d.rssi+' dBm &middot; ~'+Math.round(d.dist*20)+'m</div></div><div class="radar-device-tags">'+tags+'</div>';
+    listEl.appendChild(row);
+});
+})();
+</script>
+</body>
+</html>

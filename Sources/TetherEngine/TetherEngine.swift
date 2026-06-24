@@ -7,6 +7,8 @@ public final class TetherEngine: ObservableObject {
     public let radio: RadioController
     public let clients: ClientManager
     public let beacon: BLEBeacon
+    public let sleepGuard = SleepGuard()
+    public let systemWatcher = SystemWatcher()
 
     @Published public var networkStatus: String = "Initializing..."
     @Published public var primaryInterface: String = "—"
@@ -40,6 +42,14 @@ public final class TetherEngine: ObservableObject {
                 self.primaryInterface = snapshot.primaryInterface?.name ?? "—"
                 self.interfaceType = snapshot.primaryInterface?.typeLabel ?? "—"
                 self.isExpensive = snapshot.isExpensive
+            }
+        }
+
+        systemWatcher.start { [weak self] key in
+            guard let self = self else { return }
+            if key.contains("network_change") || key.contains("Link") || key.contains("IPv4") {
+                self.refreshRadio()
+                self.refreshSources()
             }
         }
 
@@ -108,6 +118,7 @@ public final class TetherEngine: ObservableObject {
         Task {
             do {
                 try await sharing.startSharing()
+                self.sleepGuard.engage()
                 await MainActor.run { self.sharingActive = true }
             } catch {
                 await MainActor.run { self.sharingActive = false }
@@ -118,6 +129,7 @@ public final class TetherEngine: ObservableObject {
     public func stopSharing() {
         Task {
             try? await sharing.stopSharing()
+            self.sleepGuard.release()
             await MainActor.run {
                 self.sharingActive = false
                 self.connectedDevices = []

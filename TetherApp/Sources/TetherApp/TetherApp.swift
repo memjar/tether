@@ -5,10 +5,11 @@ struct TetherMobileApp: App {
     @StateObject private var beacon = BeaconDiscovery()
     @StateObject private var radar = BLERadar()
     @StateObject private var tether = BLETether()
+    @StateObject private var mesh = TetherMesh()
 
     var body: some Scene {
         WindowGroup {
-            RootView(beacon: beacon, radar: radar, tether: tether)
+            RootView(beacon: beacon, radar: radar, tether: tether, mesh: mesh)
                 .preferredColorScheme(.dark)
                 .onAppear { tether.startScanning() }
         }
@@ -19,10 +20,11 @@ struct RootView: View {
     @ObservedObject var beacon: BeaconDiscovery
     @ObservedObject var radar: BLERadar
     @ObservedObject var tether: BLETether
+    @ObservedObject var mesh: TetherMesh
     @State private var tab: Tab = .status
 
     enum Tab: String, CaseIterable {
-        case status, devices, radar, settings
+        case status, devices, radar, mesh, settings
     }
 
     private let gold = Color(red: 212/255, green: 175/255, blue: 55/255)
@@ -42,6 +44,7 @@ struct RootView: View {
         case .status: StatusView(beacon: beacon)
         case .devices: DeviceListView(beacon: beacon)
         case .radar: RadarView(radar: radar)
+        case .mesh: MeshView(mesh: mesh)
         case .settings: SettingsView(beacon: beacon)
         }
     }
@@ -51,6 +54,7 @@ struct RootView: View {
             tabButton(.status, icon: "antenna.radiowaves.left.and.right", label: "Status")
             tabButton(.devices, icon: "macbook.and.iphone", label: "Devices")
             tabButton(.radar, icon: "dot.radiowaves.left.and.right", label: "Radar")
+            tabButton(.mesh, icon: "bubble.left.and.bubble.right", label: "Mesh")
             tabButton(.settings, icon: "gearshape", label: "Settings")
         }
         .padding(.top, 8)
