@@ -1,7 +1,7 @@
 """
-Tether Sideloader — OTA distribution service.
+Beam — OTA distribution engine for Tether.
 Signs IPAs, generates manifests, serves to devices over HTTPS.
-Runs on Forge or any fleet node behind Caddy/nginx with TLS.
+Runs standalone or embedded in Tether as a self-hosted distribution node.
 """
 import os
 import hmac
@@ -19,14 +19,14 @@ from fastapi.responses import FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-DIST_DIR = Path(os.getenv("SIDELOADER_DIST", "/var/lib/tether-sideloader"))
-SIGNING_IDENTITY = os.getenv("SIDELOADER_IDENTITY", "Apple Distribution: Robert Lewis (237Q6KHJY6)")
-PROVISIONING_PROFILE = os.getenv("SIDELOADER_PROFILE", "")
-BASE_URL = os.getenv("SIDELOADER_URL", "https://tether.diy")
-API_KEY = os.getenv("SIDELOADER_KEY", "")
+DIST_DIR = Path(os.getenv("BEAM_DIST", "/var/lib/tether-beam"))
+SIGNING_IDENTITY = os.getenv("BEAM_IDENTITY", "Apple Distribution: Robert Lewis (237Q6KHJY6)")
+PROVISIONING_PROFILE = os.getenv("BEAM_PROFILE", "")
+BASE_URL = os.getenv("BEAM_URL", "https://tether.diy")
+API_KEY = os.getenv("BEAM_KEY", "")
 BUNDLE_ID = "ca.axetechnologies.tether"
 
-app = FastAPI(title="Tether Sideloader", version="1.0.0")
+app = FastAPI(title="Beam", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["https://tether.diy"], allow_methods=["GET"], allow_headers=["*"])
 
 
@@ -154,7 +154,7 @@ def health():
     latest = _latest_build()
     return {
         "status": "ok",
-        "service": "tether-sideloader",
+        "service": "beam",
         "latest": latest.version if latest else None,
         "dist_dir": str(DIST_DIR),
     }
