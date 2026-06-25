@@ -258,7 +258,7 @@ print(f"Split: {{len(train)}} train / {{len(valid)}} valid")
         r = subprocess.run(
             ["ssh", JL2_HOST, train_cmd],
             capture_output=True, text=True,
-            timeout=1800  # 30 min max for training
+            timeout=3600  # 60 min max for training
         )
         if r.returncode != 0:
             log(f"MLX training failed: {r.stderr[-500:]}", error=True)
@@ -268,7 +268,7 @@ print(f"Split: {{len(train)}} train / {{len(valid)}} valid")
         tail = "\n".join(lines[-10:])
         log(f"MLX training complete for {target}", output_tail=tail)
     except subprocess.TimeoutExpired:
-        log(f"MLX training timed out after 30min", error=True)
+        log(f"MLX training timed out after 60min", error=True)
         return False
     except Exception as e:
         log(f"MLX training failed: {e}", error=True)
