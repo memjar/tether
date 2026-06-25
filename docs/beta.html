@@ -152,7 +152,7 @@
             <div class="demo-card-icon"><svg width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#D4AF37"/></svg></div>
             <h3>Deep Radar</h3>
             <p>Manufacturer, battery, model detection. Ghost mode unlocks full device fingerprinting.</p>
-            <div class="badge-row"><span class="demo-badge">CoreBluetooth</span><span class="demo-badge">Private API</span></div>
+            <div class="badge-row"><span class="demo-badge">CoreBluetooth</span><span class="demo-badge">Low-Level</span></div>
         </div>
     </div>
 </section>
@@ -187,19 +187,19 @@
 <section class="section">
     <div class="eyebrow fade">Under the Hood</div>
     <h2 class="fade">System-level.</h2>
-    <p class="subtitle fade">Built on reverse-engineered Apple internals. Every layer mapped from binary extraction.</p>
+    <p class="subtitle fade">Purpose-built from the ground up. Every layer designed for maximum throughput and zero configuration.</p>
     <div class="arch-grid fade">
         <div class="arch-card"><div class="arch-label">Sleep Prevention</div><h3>IOPMAssertion</h3><p>Prevents system sleep while beacon is active. Automatic engage/release on beacon state transitions.</p></div>
         <div class="arch-card"><div class="arch-label">Network Events</div><h3>SCDynamicStore</h3><p>Real-time monitoring of 8 key paths: Global/IPv4, Global/DNS, interface link state. Darwin notification bus for wifi.link.up/down, bluetooth.state.</p></div>
-        <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>BluetoothManager</h3><p>Private framework via dlopen. Device discovery notifications, _name/_address/_productName/_batteryLevel key-value extraction.</p></div>
+        <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>BluetoothManager</h3><p>Native system integration for device discovery. Reads device name, address, product model, and battery level via standard observer patterns.</p></div>
         <div class="arch-card"><div class="arch-label">Ghost Mode</div><h3>MobileGestalt</h3><p>MGCopyAnswer for DeviceName, ModelNumber, WiFiAddress, BluetoothAddress. Device identity without entitlement gates.</p></div>
     </div>
 </section>
 
 <section class="section" style="background:var(--dark);">
     <div class="eyebrow fade">Deep Stack</div>
-    <h2 class="fade">What we extracted.</h2>
-    <p class="subtitle fade">Reverse-engineered from Apple's private frameworks. This is the layer beneath the public SDK.</p>
+    <h2 class="fade">What we built.</h2>
+    <p class="subtitle fade">A custom networking engine that coordinates native system frameworks into a unified tethering pipeline.</p>
     <div class="arch-grid fade" style="grid-template-columns:1fr;">
         <div class="arch-card deep-inner" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;">
             <div>
