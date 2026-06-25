@@ -6,8 +6,8 @@ public struct BeamConfig {
     public let baseURL: String
     public let apiKey: String
     public let allowedBundleIds: [String]
-    public let ntfyTopic: String
     public let webhookURLs: [String]
+    public let pushTargets: [BeamPushTarget]
 
     public init(
         port: UInt16 = 8902,
@@ -15,14 +15,14 @@ public struct BeamConfig {
         baseURL: String = "https://tether.diy",
         apiKey: String = "",
         allowedBundleIds: [String] = ["ca.axetechnologies.tether"],
-        ntfyTopic: String = "",
-        webhookURLs: [String] = []
+        webhookURLs: [String] = [],
+        pushTargets: [BeamPushTarget] = []
     ) {
         self.port = UInt16(ProcessInfo.processInfo.environment["BEAM_PORT"] ?? "") ?? port
         self.baseURL = ProcessInfo.processInfo.environment["BEAM_URL"] ?? baseURL
         self.apiKey = ProcessInfo.processInfo.environment["BEAM_KEY"] ?? apiKey
-        self.ntfyTopic = ProcessInfo.processInfo.environment["BEAM_NTFY"] ?? ntfyTopic
         self.allowedBundleIds = allowedBundleIds
+        self.pushTargets = pushTargets
 
         if let envHooks = ProcessInfo.processInfo.environment["BEAM_WEBHOOKS"] {
             self.webhookURLs = envHooks.split(separator: ",").map(String.init)

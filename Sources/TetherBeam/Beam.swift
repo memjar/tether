@@ -18,10 +18,7 @@ public final class Beam: ObservableObject {
     public init(config: BeamConfig = .default) {
         self.config = config
         self.identity = BeamIdentity.current()
-        self.events = BeamEventBus(
-            deviceId: identity.pin,
-            ntfyTopic: config.ntfyTopic.isEmpty ? nil : config.ntfyTopic
-        )
+        self.events = BeamEventBus(deviceId: identity.pin)
         self.store = BeamStore(directory: config.storageDir)
         self.server = BeamServer(port: config.port, store: store, manifest: manifest, config: config, events: events)
         self.discovery = BeamDiscovery(port: config.port)
@@ -30,14 +27,24 @@ public final class Beam: ObservableObject {
             events.addWebhook(BeamWebhook(url: url, label: URL(string: url)?.host ?? url))
         }
 
+        for target in config.pushTargets {
+            events.addPushTarget(target)
+        }
+
         discovery.onPeerFound = { [weak self] peer in
             guard let self = self else { return }
             DispatchQueue.main.async { self.discoveredPeers.append(peer) }
             self.events.emit(.peerDiscovered, payload: ["name": peer.name, "host": peer.host])
+
+            if peer.port > 0 {
+                let fleetPush = BeamFleetPush(name: peer.name, endpoint: "http://\(peer.host):\(peer.port)")
+                self.events.addPushTarget(fleetPush)
+            }
         }
         discovery.onPeerLost = { [weak self] id in
             guard let self = self else { return }
             DispatchQueue.main.async { self.discoveredPeers.removeAll { $0.id == id } }
+            self.events.removePushTarget(id: id)
             self.events.emit(.peerLost, payload: ["id": id])
         }
     }
@@ -63,7 +70,6 @@ public final class Beam: ObservableObject {
     public func upload(fileAt url: URL, name: String, version: String, build: String, platform: BeamPlatform, ghostMode: Bool = false) throws -> BeamBuild {
         let data = try Data(contentsOf: url)
         guard let record = store.save(fileData: data, name: name, version: version, build: build, bundleId: config.allowedBundleIds.first ?? "ca.axetechnologies.tether", platform: platform, ghostMode: ghostMode) else {
-            NSLog("[Beam] upload failed for %@", name)
             throw BeamError.saveFailed
         }
         refreshBuilds()
@@ -112,6 +118,10 @@ public final class Beam: ObservableObject {
 
     public func webhooks() -> [BeamWebhook] {
         events.listWebhooks()
+    }
+
+    public func recentEvents(limit: Int = 50) -> [BeamEvent] {
+        events.recentEvents(limit: limit)
     }
 
     private func refreshBuilds() {

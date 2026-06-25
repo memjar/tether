@@ -41,11 +41,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         beam = Beam(config: BeamConfig(
             baseURL: "https://beam.tether.diy",
-            ntfyTopic: "axe-jamie",
             webhookURLs: [
                 "https://axe.observer/api/beam/events",
                 "https://atlas.axe.observer/api/ingest",
                 "https://crown.axe.observer/api/ingest"
+            ],
+            pushTargets: [
+                BeamFleetPush(name: "nova", endpoint: "http://jl1.local:8902"),
+                BeamFleetPush(name: "forge", endpoint: "http://jl2.local:8902"),
+                BeamFleetPush(name: "vigil", endpoint: "http://jl3.local:8902")
             ]
         ))
         beam.start()

@@ -188,6 +188,35 @@ public final class BeamServer {
             events.removeWebhook(id: uuid)
             send(conn: conn, status: 200, body: "{\"status\":\"removed\"}")
 
+        case ("POST", "/events"):
+            guard let body = extractBody(raw),
+                  let data = body.data(using: .utf8) else {
+                send(conn: conn, status: 400, body: "{\"error\":\"body required\"}")
+                return
+            }
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            if let event = try? decoder.decode(BeamEvent.self, from: data) {
+                NSLog("[Beam] received event from %@: %@ %@", remoteAddr, event.type.rawValue, event.payload.description)
+                send(conn: conn, status: 200, body: "{\"status\":\"received\"}")
+            } else {
+                send(conn: conn, status: 400, body: "{\"error\":\"invalid event\"}")
+            }
+
+        case ("GET", "/events"):
+            let recent = events.recentEvents(limit: 50)
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .iso8601
+            if let data = try? encoder.encode(recent), let json = String(data: data, encoding: .utf8) {
+                send(conn: conn, status: 200, body: json)
+            } else {
+                send(conn: conn, status: 200, body: "[]")
+            }
+
+        case ("GET", "/identity"):
+            let id = BeamIdentity.current()
+            send(conn: conn, status: 200, body: "{\"pin\":\"\(id.pin)\",\"hostname\":\"\(id.hostname)\",\"platform\":\"\(id.platform)\"}")
+
         case ("OPTIONS", _):
             send(conn: conn, status: 200, body: "")
 
