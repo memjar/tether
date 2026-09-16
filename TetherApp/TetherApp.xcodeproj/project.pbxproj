@@ -7,32 +7,48 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10001 /* TetherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
-		A10002 /* TetherDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
-		A10003 /* BeaconDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
-		A10004 /* BLERadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
-		A10099 /* BLETether.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10099; };
-		A10005 /* GhostHotspot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
-		A10006 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
-		A10007 /* DeviceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
-		A10008 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
-		A10009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009; };
+		875F70D8C277B35EA06F45B1 /* MeshMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077BF722B132627BC69E04FB /* MeshMessage.swift */; };
+		9C1E01CD03FEFB27544FA922 /* MeshView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1E846EF9D5E07D81654B2B /* MeshView.swift */; };
+		9CDCE803DA9246FAA9FA5F4E /* TetherMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F66391BE4FF08FA55706CE /* TetherMesh.swift */; };
+		A10001 /* TetherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001 /* TetherApp.swift */; };
+		A10002 /* TetherDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002 /* TetherDevice.swift */; };
+		A10003 /* BeaconDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003 /* BeaconDiscovery.swift */; };
+		A10004 /* BLERadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004 /* BLERadar.swift */; };
+		A10005 /* GhostHotspot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005 /* GhostHotspot.swift */; };
+		A10006 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006 /* StatusView.swift */; };
+		A10007 /* DeviceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007 /* DeviceListView.swift */; };
+		A10008 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008 /* RadarView.swift */; };
+		A10009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009 /* SettingsView.swift */; };
+		A10099 /* BLETether.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10099 /* BLETether.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C10001 /* Tether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tether.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		077BF722B132627BC69E04FB /* MeshMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MeshMessage.swift; sourceTree = "<group>"; };
+		2A1E846EF9D5E07D81654B2B /* MeshView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MeshView.swift; sourceTree = "<group>"; };
+		87F66391BE4FF08FA55706CE /* TetherMesh.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TetherMesh.swift; sourceTree = "<group>"; };
 		B10001 /* TetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherApp.swift; sourceTree = "<group>"; };
 		B10002 /* TetherDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherDevice.swift; sourceTree = "<group>"; };
 		B10003 /* BeaconDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconDiscovery.swift; sourceTree = "<group>"; };
 		B10004 /* BLERadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLERadar.swift; sourceTree = "<group>"; };
-		B10099 /* BLETether.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLETether.swift; sourceTree = "<group>"; };
 		B10005 /* GhostHotspot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GhostHotspot.swift; sourceTree = "<group>"; };
 		B10006 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		B10007 /* DeviceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceListView.swift; sourceTree = "<group>"; };
 		B10008 /* RadarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarView.swift; sourceTree = "<group>"; };
 		B10009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B10010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10099 /* BLETether.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLETether.swift; sourceTree = "<group>"; };
+		C10001 /* Tether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tether.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E10003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		D10001 = {
@@ -59,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				B10002 /* TetherDevice.swift */,
+				077BF722B132627BC69E04FB /* MeshMessage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -70,6 +87,7 @@
 				B10004 /* BLERadar.swift */,
 				B10099 /* BLETether.swift */,
 				B10005 /* GhostHotspot.swift */,
+				87F66391BE4FF08FA55706CE /* TetherMesh.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -81,6 +99,7 @@
 				B10007 /* DeviceListView.swift */,
 				B10008 /* RadarView.swift */,
 				B10009 /* SettingsView.swift */,
+				2A1E846EF9D5E07D81654B2B /* MeshView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -98,7 +117,7 @@
 /* Begin PBXNativeTarget section */
 		E10001 /* Tether */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F10003;
+			buildConfigurationList = F10003 /* Build configuration list for PBXNativeTarget "Tether" */;
 			buildPhases = (
 				E10002 /* Sources */,
 				E10003 /* Frameworks */,
@@ -122,7 +141,7 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 			};
-			buildConfigurationList = F10001;
+			buildConfigurationList = F10001 /* Build configuration list for PBXProject "TetherApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -155,20 +174,13 @@
 				A10007 /* DeviceListView.swift in Sources */,
 				A10008 /* RadarView.swift in Sources */,
 				A10009 /* SettingsView.swift in Sources */,
+				875F70D8C277B35EA06F45B1 /* MeshMessage.swift in Sources */,
+				9CDCE803DA9246FAA9FA5F4E /* TetherMesh.swift in Sources */,
+				9C1E01CD03FEFB27544FA922 /* MeshView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		E10003 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		F10004 /* Debug */ = {
@@ -322,7 +334,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F10001 /* Build configuration list for PBXProject "Tether" */ = {
+		F10001 /* Build configuration list for PBXProject "TetherApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F10004 /* Debug */,
@@ -343,7 +355,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = E10000 /* Project object */;
 }

@@ -41,7 +41,7 @@ struct RootView: View {
     @ViewBuilder
     var tabContent: some View {
         switch tab {
-        case .status: StatusView(beacon: beacon)
+        case .status: StatusView(beacon: beacon, tether: tether)
         case .devices: DeviceListView(beacon: beacon)
         case .radar: RadarView(radar: radar)
         case .mesh: MeshView(mesh: mesh)

@@ -70,7 +70,7 @@ In Xcode, select the TetherAppApp target:
 
 | Setting | Value |
 |---------|-------|
-| Deployment Target | iOS 16.0 |
+| Deployment Target | iOS 15.0 |
 | Device | iPhone (arm64) |
 | Build Configuration | Release |
 | MARKETING_VERSION | 1.0.0 |
