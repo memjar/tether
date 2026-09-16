@@ -20,11 +20,13 @@
 		A10008 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008 /* RadarView.swift */; };
 		A10009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009 /* SettingsView.swift */; };
 		A10099 /* BLETether.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10099 /* BLETether.swift */; };
+		B5A71AD5D7103A1CE42408E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50BC7E9ED9C3CD4E235F92D3 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		077BF722B132627BC69E04FB /* MeshMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MeshMessage.swift; sourceTree = "<group>"; };
 		2A1E846EF9D5E07D81654B2B /* MeshView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MeshView.swift; sourceTree = "<group>"; };
+		50BC7E9ED9C3CD4E235F92D3 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		87F66391BE4FF08FA55706CE /* TetherMesh.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TetherMesh.swift; sourceTree = "<group>"; };
 		B10001 /* TetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherApp.swift; sourceTree = "<group>"; };
 		B10002 /* TetherDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetherDevice.swift; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 				D10003 /* Models */,
 				D10004 /* Services */,
 				D10005 /* Views */,
+				50BC7E9ED9C3CD4E235F92D3 /* Assets.xcassets */,
 			);
 			path = Sources/TetherApp;
 			sourceTree = "<group>";
@@ -121,6 +124,7 @@
 			buildPhases = (
 				E10002 /* Sources */,
 				E10003 /* Frameworks */,
+				E087B3F65277E7D73C19A2C8 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -158,6 +162,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E087B3F65277E7D73C19A2C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5A71AD5D7103A1CE42408E2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E10002 /* Sources */ = {
