@@ -6,6 +6,7 @@ final class BeaconDiscovery: ObservableObject {
     @Published var isConnected = false
     @Published var status: BeaconStatus?
     @Published var discoveredHosts: [String] = []
+    @Published var localNetworkBlocked = false
 
     private var browser: NWBrowser?
     private var connection: NWConnection?
@@ -27,13 +28,22 @@ final class BeaconDiscovery: ObservableObject {
                 if let first = results.first { self?.connect(to: first.endpoint) }
             }
         }
-        browser?.stateUpdateHandler = { _ in }
+        browser?.stateUpdateHandler = { [weak self] state in
+            switch state {
+            case .failed, .waiting:
+                self?.localNetworkBlocked = true
+            case .ready:
+                self?.localNetworkBlocked = false
+            default: break
+            }
+        }
         browser?.start(queue: .main)
     }
 
     func stopDiscovery() {
         browser?.cancel()
         browser = nil
+        localNetworkBlocked = false
         disconnect()
     }
 

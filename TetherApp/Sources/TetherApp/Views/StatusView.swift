@@ -12,6 +12,12 @@ struct StatusView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 header
+                if let message = tether.availability.bannerMessage {
+                    PermissionBanner(message: message, icon: "dot.radiowaves.left.and.right")
+                }
+                if beacon.localNetworkBlocked {
+                    PermissionBanner(message: "Local Network access is off. Tether can't reach your beacon without it.", icon: "wifi.exclamationmark")
+                }
                 connectionStatus
                 if let info = beacon.status?.info { statsPanel(info) }
                 bleLinkSection

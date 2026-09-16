@@ -9,6 +9,7 @@ let kRadioCharUUID = CBUUID(string: "A1B2C3D4-E5F6-7890-ABCD-EF1234567893")
 
 final class BLETether: NSObject, ObservableObject {
     @Published var isConnected = false
+    @Published var availability: BLEAvailability = .unknown
     @Published var sharingState: String = "unknown"
     @Published var clientCount: Int = 0
     @Published var ssid: String = ""
@@ -54,6 +55,8 @@ final class BLETether: NSObject, ObservableObject {
 
 extension BLETether: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        let availability = BLEAvailability(central.state)
+        DispatchQueue.main.async { self.availability = availability }
         guard central.state == .poweredOn else { return }
         central.scanForPeripherals(withServices: [kTetherServiceUUID], options: [
             CBCentralManagerScanOptionAllowDuplicatesKey: false

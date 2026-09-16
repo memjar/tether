@@ -20,6 +20,9 @@
 		A10008 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008 /* RadarView.swift */; };
 		A10009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009 /* SettingsView.swift */; };
 		A10099 /* BLETether.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10099 /* BLETether.swift */; };
+		290BE0622CE64F978ED51D65 /* BLEAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712BC3BB89224CA79B66FC2C /* BLEAvailability.swift */; };
+		AA2A3AFCD38545479E405EA9 /* PermissionBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB531A9985420BB1AA2D04 /* PermissionBanner.swift */; };
+		E9805F2CCDF64D3F9AB34314 /* PermissionOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE407E1B4D3B4A3FBDF801FC /* PermissionOnboardingView.swift */; };
 		B5A71AD5D7103A1CE42408E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50BC7E9ED9C3CD4E235F92D3 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +42,9 @@
 		B10009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B10010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B10099 /* BLETether.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLETether.swift; sourceTree = "<group>"; };
+		712BC3BB89224CA79B66FC2C /* BLEAvailability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEAvailability.swift; sourceTree = "<group>"; };
+		51DB531A9985420BB1AA2D04 /* PermissionBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionBanner.swift; sourceTree = "<group>"; };
+		FE407E1B4D3B4A3FBDF801FC /* PermissionOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionOnboardingView.swift; sourceTree = "<group>"; };
 		C10001 /* Tether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tether.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -91,6 +97,7 @@
 				B10099 /* BLETether.swift */,
 				B10005 /* GhostHotspot.swift */,
 				87F66391BE4FF08FA55706CE /* TetherMesh.swift */,
+				712BC3BB89224CA79B66FC2C /* BLEAvailability.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -103,6 +110,8 @@
 				B10008 /* RadarView.swift */,
 				B10009 /* SettingsView.swift */,
 				2A1E846EF9D5E07D81654B2B /* MeshView.swift */,
+				51DB531A9985420BB1AA2D04 /* PermissionBanner.swift */,
+				FE407E1B4D3B4A3FBDF801FC /* PermissionOnboardingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -192,6 +201,9 @@
 				875F70D8C277B35EA06F45B1 /* MeshMessage.swift in Sources */,
 				9CDCE803DA9246FAA9FA5F4E /* TetherMesh.swift in Sources */,
 				9C1E01CD03FEFB27544FA922 /* MeshView.swift in Sources */,
+				290BE0622CE64F978ED51D65 /* BLEAvailability.swift in Sources */,
+				AA2A3AFCD38545479E405EA9 /* PermissionBanner.swift in Sources */,
+				E9805F2CCDF64D3F9AB34314 /* PermissionOnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

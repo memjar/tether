@@ -13,6 +13,9 @@ struct RadarView: View {
                 VStack(spacing: 20) {
                     Spacer()
                     radarHeader
+                    if let message = radar.availability.bannerMessage {
+                        PermissionBanner(message: message, icon: "dot.radiowaves.left.and.right")
+                    }
                     radarDisk(size: size)
                     legend
                     Spacer()

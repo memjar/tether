@@ -10,6 +10,7 @@ final class TetherMesh: NSObject, ObservableObject {
     @Published var messages: [MeshMessage] = []
     @Published var droppedFiles: [DroppedFile] = []
     @Published var transferProgress: [String: Double] = [:]
+    @Published var localNetworkBlocked = false
 
     var peerCount: Int { connectedPeers.count }
     var displayName: String { myPeer.displayName }
@@ -35,6 +36,7 @@ final class TetherMesh: NSObject, ObservableObject {
 
     func start() {
         guard session == nil else { return }
+        DispatchQueue.main.async { self.localNetworkBlocked = false }
         let s = MCSession(peer: myPeer, securityIdentity: nil, encryptionPreference: .required)
         s.delegate = self
         session = s
@@ -62,6 +64,7 @@ final class TetherMesh: NSObject, ObservableObject {
             self.connectedPeers = []
             self.messages = []
             self.transferProgress = [:]
+            self.localNetworkBlocked = false
         }
     }
 
@@ -180,6 +183,7 @@ extension TetherMesh: MCNearbyServiceAdvertiserDelegate {
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
         NSLog("[TetherMesh] advertiser failed: %@", error.localizedDescription)
+        DispatchQueue.main.async { self.localNetworkBlocked = true }
     }
 }
 
@@ -193,5 +197,6 @@ extension TetherMesh: MCNearbyServiceBrowserDelegate {
 
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
         NSLog("[TetherMesh] browser failed: %@", error.localizedDescription)
+        DispatchQueue.main.async { self.localNetworkBlocked = true }
     }
 }

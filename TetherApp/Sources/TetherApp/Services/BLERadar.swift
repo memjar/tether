@@ -21,6 +21,7 @@ struct BLEDevice: Identifiable, Equatable {
 final class BLERadar: NSObject, ObservableObject {
     @Published var devices: [BLEDevice] = []
     @Published var isScanning = false
+    @Published var availability: BLEAvailability = .unknown
 
     private var central: CBCentralManager?
     private var peripheral: CBPeripheralManager?
@@ -65,6 +66,7 @@ final class BLERadar: NSObject, ObservableObject {
 
 extension BLERadar: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        availability = BLEAvailability(central.state)
         guard central.state == .poweredOn else { return }
         central.scanForPeripherals(withServices: nil, options: [
             CBCentralManagerScanOptionAllowDuplicatesKey: true

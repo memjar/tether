@@ -11,7 +11,6 @@ struct TetherMobileApp: App {
         WindowGroup {
             RootView(beacon: beacon, radar: radar, tether: tether, mesh: mesh)
                 .preferredColorScheme(.dark)
-                .onAppear { tether.startScanning() }
         }
     }
 }
@@ -22,6 +21,8 @@ struct RootView: View {
     @ObservedObject var tether: BLETether
     @ObservedObject var mesh: TetherMesh
     @State private var tab: Tab = .status
+    @AppStorage("didShowPermissionOnboarding") private var didShowOnboarding = false
+    @State private var showOnboarding = false
 
     enum Tab: String, CaseIterable {
         case status, devices, radar, mesh, settings
@@ -35,6 +36,19 @@ struct RootView: View {
             dark.ignoresSafeArea()
             tabContent
             tabBar
+        }
+        .onAppear {
+            if didShowOnboarding {
+                tether.startScanning()
+            } else {
+                showOnboarding = true
+            }
+        }
+        .fullScreenCover(isPresented: $showOnboarding, onDismiss: {
+            didShowOnboarding = true
+            tether.startScanning()
+        }) {
+            PermissionOnboardingView { showOnboarding = false }
         }
     }
 

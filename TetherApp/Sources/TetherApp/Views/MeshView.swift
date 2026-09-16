@@ -18,6 +18,9 @@ struct MeshView: View {
     var body: some View {
         VStack(spacing: 0) {
             meshHeader
+            if mesh.localNetworkBlocked {
+                PermissionBanner(message: "Local Network access is off. Tether needs it to reach other devices on the mesh.", icon: "wifi.exclamationmark")
+            }
             transferBar
             messageList
             inputBar
