@@ -32,6 +32,7 @@
 	<array>
 		<string>_tether._tcp</string>
 		<string>_tether-mesh._tcp</string>
+		<string>_tether-mesh._udp</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

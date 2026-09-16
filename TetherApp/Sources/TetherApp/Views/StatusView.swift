@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StatusView: View {
     @ObservedObject var beacon: BeaconDiscovery
+    @ObservedObject var tether: BLETether
     @StateObject private var hotspot = GhostHotspot()
 
     private let gold = Color(red: 212/255, green: 175/255, blue: 55/255)
@@ -13,6 +14,7 @@ struct StatusView: View {
                 header
                 connectionStatus
                 if let info = beacon.status?.info { statsPanel(info) }
+                bleLinkSection
                 hotspotSection
             }
             .padding(.bottom, 80)
@@ -113,6 +115,68 @@ struct StatusView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
+    }
+
+    var bleLinkSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("BEACON BLE LINK")
+                .font(.system(size: 10, weight: .semibold))
+                .kerning(0.5)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 16)
+
+            VStack(spacing: 0) {
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(tether.isConnected ? gold : Color.gray)
+                        .frame(width: 10, height: 10)
+                    Text(tether.isConnected ? "Connected" : "Not Connected")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.white)
+                    Spacer()
+                    Text(tether.sharingState.capitalized)
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+
+                if tether.isConnected {
+                    Rectangle().fill(Color.white.opacity(0.04)).frame(height: 1)
+                    HStack(spacing: 0) {
+                        bleStatCell("SSID", tether.ssid.isEmpty ? "—" : tether.ssid)
+                        divider
+                        bleStatCell("CLIENTS", "\(tether.clientCount)")
+                    }
+                    Rectangle().fill(Color.white.opacity(0.04)).frame(height: 1)
+                    HStack(spacing: 0) {
+                        bleStatCell("RSSI", "\(tether.rssi) dBm")
+                        divider
+                        bleStatCell("BAND", tether.band.isEmpty ? "—" : tether.band)
+                    }
+                }
+            }
+            .background(cardBg)
+            .overlay(Rectangle().stroke(Color.white.opacity(0.06), lineWidth: 1))
+            .padding(.horizontal, 16)
+        }
+        .padding(.top, 16)
+    }
+
+    func bleStatCell(_ label: String, _ value: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                .foregroundColor(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(label)
+                .font(.system(size: 9, weight: .medium))
+                .kerning(0.5)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
     }
 
     var hotspotSection: some View {
